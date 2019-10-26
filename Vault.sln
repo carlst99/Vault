@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vault.Core", "Vault.Core\Va
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vault.Core.Tests", "Vault.Core.Tests\Vault.Core.Tests.csproj", "{024A09D2-9245-4AE8-8A69-0B2EFA470B74}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vault.Wpf", "Vault.Wpf1\Vault.Wpf.csproj", "{F8C4CD53-ACDE-443B-9D2E-5D2DF6B4EFBF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vault.Wpf", "Vault.Wpf\Vault.Wpf.csproj", "{F8C4CD53-ACDE-443B-9D2E-5D2DF6B4EFBF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

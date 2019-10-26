@@ -1,7 +1,6 @@
 ﻿using MvvmCross.Commands;
 using MvvmCross.Navigation;
 using MvvmCross.Plugin.Messenger;
-using System.Collections;
 using System.Collections.Generic;
 using Vault.Core.Model.Messages;
 using Vault.Core.Services;
