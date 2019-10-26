@@ -1,8 +1,10 @@
-﻿namespace Vault.Core.Services
+﻿using System.Threading.Tasks;
+
+namespace Vault.Core.Services
 {
     public interface IImportService
     {
-        bool TryImportImage(string path);
-        bool TryImportVideo(string path);
+        Task<bool> TryImportImageAsync(string path);
+        Task<bool> TryImportVideoAsync(string path);
     }
 }

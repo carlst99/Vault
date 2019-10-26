@@ -9,9 +9,55 @@
                   d:DesignHeight="450"
                   d:DesignWidth="800"
                   mc:Ignorable="d">
+
+    <views:MvxWpfView.Resources>
+        <local:NativeMvxVisibilityValueConverter x:Key="VisibilityConverter"/>
+    </views:MvxWpfView.Resources>
+
     <Grid>
-        <TextBlock HorizontalAlignment="Center"
-                   VerticalAlignment="Center"
-                   Text="Welcome to the ImageDisplayView!"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Margin="8"
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal">
+                <TextBlock Margin="0,0,4,0"
+                           Style="{StaticResource MaterialDesignBody2TextBlock}"
+                           Text="{Binding ImageCount}"/>
+                <TextBlock Style="{StaticResource MaterialDesignBody2TextBlock}"
+                           Text="{Binding [Label_Images], Mode=OneTime}"/>
+            </StackPanel>
+
+            <Button Grid.Column="2"
+                    Margin="8"
+                    HorizontalAlignment="Right"
+                    Command="{Binding ImportImagesCommand}">
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal">
+                        <md:PackIcon Kind="Import"/>
+                        <TextBlock Margin="4,0,0,0"
+                                   Text="{Binding [Command_ImportImages], Mode=OneTime}"/>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+        </Grid>
+
+        <Border Grid.Row="1"
+                Margin="32,0,32,0"
+                BorderBrush="#DDDDDD"
+                BorderThickness="0,0,0,3"/>
+        <ProgressBar Grid.Row="1"
+                     Margin="32,0,32,0"
+                     IsIndeterminate="True"
+                     Visibility="{Binding IsImportInProgress, Converter={StaticResource VisibilityConverter}}"/>
     </Grid>
 </views:MvxWpfView>

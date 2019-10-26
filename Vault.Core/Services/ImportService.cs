@@ -1,9 +1,11 @@
-﻿using IntraMessaging;
+﻿using MvvmCross.Plugin.Messenger;
+using Realms;
 using Serilog;
+using StreamEncryptor.Predefined;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
+using System.Threading.Tasks;
+using Vault.Core.Model.DbContext;
 using Vault.Core.Model.Messages;
 
 namespace Vault.Core.Services
@@ -13,16 +15,19 @@ namespace Vault.Core.Services
         public const string IMAGE_FOLDER_NAME = "0";
         public const string VIDEO_FOLDER_NAME = "0";
 
-        private readonly IIntraMessenger _messenger;
+        private readonly IMvxMessenger _messenger;
+        private readonly Realm _realm;
 
-        public ImportService(IIntraMessenger messenger)
+        public ImportService(IMvxMessenger messenger)
         {
             _messenger = messenger;
+            _realm = RealmHelpers.GetRealmInstance();
         }
 
-        public bool TryImportImage(string path)
+        public async Task<bool> TryImportImageAsync(string path)
         {
-            if (!CheckImportFolderStructure(App.GetAppdataFilePath(IMAGE_FOLDER_NAME)))
+            string outputFolder = App.GetAppdataFilePath(IMAGE_FOLDER_NAME);
+            if (!PreImportChecks(outputFolder))
                 return false;
 
             if (!File.Exists(path))
@@ -34,10 +39,22 @@ namespace Vault.Core.Services
             string errMessage = string.Empty;
             try
             {
-                using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+                int id = RealmHelpers.GetNextId<Media>();
+                Media media = new Media(id, MediaType.Image)
                 {
+                    FilePath = GetFilePath(outputFolder, id),
+                    Name = Path.GetFileName(path),
+                    ThumbPath = GetThumbPath(outputFolder, id)
+                };
 
+                using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+                using (FileStream output = new FileStream(media.FilePath, FileMode.CreateNew, FileAccess.Write))
+                using (var encryptor = new AesHmacEncryptor("V7GAe5ZRJ4GtxZ3S8jJLCZNQP2SXTyO4"))
+                {
+                    await encryptor.EncryptAsync(fs, output).ConfigureAwait(false);
                 }
+
+                await _realm.WriteAsync((r) => r.Add(media));
             }
             catch (FileNotFoundException fnfex)
             {
@@ -65,12 +82,12 @@ namespace Vault.Core.Services
             }
         }
 
-        public bool TryImportVideo(string path)
+        public Task<bool> TryImportVideoAsync(string path)
         {
             throw new NotImplementedException();
         }
 
-        private bool CheckImportFolderStructure(string folderPath)
+        private bool PreImportChecks(string folderPath)
         {
             try
             {
@@ -88,12 +105,17 @@ namespace Vault.Core.Services
 
         private void ShowErrorDialog(string errorMessage)
         {
-            _messenger.Send(new DialogMessage
-            {
-                Title = "Import Error",
-                Content = errorMessage,
-                Buttons = DialogMessage.DialogButton.Ok
-            });
+            _messenger.Publish(new DialogMessage(this, "Import Error", errorMessage, DialogMessage.DialogMessageType.Error));
+        }
+
+        private string GetFilePath(string folder, int id)
+        {
+            return Path.Combine(folder, id.ToString(), ".vault");
+        }
+
+        private string GetThumbPath(string folder, int id)
+        {
+            return Path.Combine(folder, id.ToString(), ".vaultt");
         }
     }
 }

@@ -9,6 +9,7 @@ using Serilog.Events;
 using System;
 using System.IO;
 using System.Runtime.CompilerServices;
+using MvvmCross.Plugin.Messenger;
 
 [assembly: InternalsVisibleTo("Vault.Core.Tests")]
 
@@ -25,9 +26,9 @@ namespace Vault.Core
                 .AsInterfaces()
                 .RegisterAsLazySingleton();
 
-            RegisterAppStart<HomeViewModel>();
+            Mvx.IoCProvider.RegisterSingleton<IMvxMessenger>(new MvxMessengerHub());
 
-            // Register instances to IoC container here
+            RegisterAppStart<HomeViewModel>();
 
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Information()
