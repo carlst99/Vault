@@ -59,7 +59,7 @@ namespace Vault.Core.ViewModels
         {
             _messenger = messenger;
             _importService = importService;
-            Images = RealmHelpers.GetRealmInstance().All<Media>().Where(m => m.Type == MediaType.Image);
+            Images = RealmHelpers.GetRealmInstance().All<Media>().Where(m => m.TypeRaw == (int)MediaType.Image);
         }
 
         private void ImportImages()

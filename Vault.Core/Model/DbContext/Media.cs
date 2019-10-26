@@ -4,7 +4,7 @@ namespace Vault.Core.Model.DbContext
 {
     public class Media : RealmObject, IContextItem
     {
-        private int TypeRaw { get; set; }
+        public int TypeRaw { get; set; }
 
         /// <summary>
         /// Gets or sets the database ID
