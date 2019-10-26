@@ -1,6 +1,6 @@
 ﻿using MvvmCross.Platforms.Wpf.Views;
 
-namespace Vault.Wpf1.Views
+namespace Vault.Wpf.Views
 {
     public partial class HomeView : MvxWpfView
     {

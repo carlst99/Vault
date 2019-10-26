@@ -101,12 +101,18 @@ namespace Vault.Core
             string path;
             if (CrossDeviceInfo.IsSupported)
             {
-                path = CrossDeviceInfo.Current.Platform switch
+                switch (CrossDeviceInfo.Current.Platform)
                 {
-                    Platform.Android => Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-                    Platform.iOS => Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                    _ => Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
-                };
+                    case Platform.Android:
+                        path = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+                        break;
+                    case Platform.iOS:
+                        path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                        break;
+                    default:
+                        path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                        break;
+                }
             } else
             {
                 path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
