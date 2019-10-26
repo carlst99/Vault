@@ -2,6 +2,8 @@
 using MvvmCross.Navigation;
 using MvvmCross.Plugin.Messenger;
 using System.Collections.Generic;
+using System.Linq;
+using Vault.Core.Model.DbContext;
 using Vault.Core.Model.Messages;
 using Vault.Core.Services;
 
@@ -15,6 +17,7 @@ namespace Vault.Core.ViewModels
         private readonly IImportService _importService;
 
         private bool _isImportInProgress;
+        private IQueryable<Media> _images;
 
         #endregion
 
@@ -40,6 +43,15 @@ namespace Vault.Core.ViewModels
             set => SetProperty(ref _isImportInProgress, value);
         }
 
+        /// <summary>
+        /// Gets or sets the list of images
+        /// </summary>
+        public IQueryable<Media> Images
+        {
+            get => _images;
+            set => SetProperty(ref _images, value);
+        }
+
         #endregion
 
         public ImageDisplayViewModel(IMvxNavigationService navigationService, IMvxMessenger messenger, IImportService importService)
@@ -47,6 +59,7 @@ namespace Vault.Core.ViewModels
         {
             _messenger = messenger;
             _importService = importService;
+            Images = RealmHelpers.GetRealmInstance().All<Media>().Where(m => m.Type == MediaType.Image);
         }
 
         private void ImportImages()

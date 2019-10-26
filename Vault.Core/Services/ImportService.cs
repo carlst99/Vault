@@ -1,6 +1,8 @@
 ﻿using MvvmCross.Plugin.Messenger;
 using Realms;
 using Serilog;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
 using StreamEncryptor.Predefined;
 using System;
 using System.IO;
@@ -14,6 +16,7 @@ namespace Vault.Core.Services
     {
         public const string IMAGE_FOLDER_NAME = "0";
         public const string VIDEO_FOLDER_NAME = "0";
+        public const int MAX_THUMB_SIZE = 256;
 
         private readonly IMvxMessenger _messenger;
         private readonly Realm _realm;
@@ -26,10 +29,12 @@ namespace Vault.Core.Services
 
         public async Task<bool> TryImportImageAsync(string path)
         {
+            // Check that the image store folder exists
             string outputFolder = App.GetAppdataFilePath(IMAGE_FOLDER_NAME);
             if (!PreImportChecks(outputFolder))
                 return false;
 
+            // Check that the file to import exists
             if (!File.Exists(path))
             {
                 Log.Information("Import - Could not find the image to import: {image}", path);
@@ -39,6 +44,7 @@ namespace Vault.Core.Services
             string errMessage = string.Empty;
             try
             {
+                // Create the new media store
                 int id = RealmHelpers.GetNextId<Media>();
                 Media media = new Media(id, MediaType.Image)
                 {
@@ -47,13 +53,31 @@ namespace Vault.Core.Services
                     ThumbPath = GetThumbPath(outputFolder, id)
                 };
 
+                // Load, encrypt and save the file and thumbnail
                 using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
                 using (FileStream output = new FileStream(media.FilePath, FileMode.CreateNew, FileAccess.Write))
+                using (MemoryStream thumbStore = new MemoryStream())
+                using (FileStream thumbOutput = new FileStream(media.ThumbPath, FileMode.CreateNew, FileAccess.Write))
+                using (Image image = Image.Load(fs))
                 using (var encryptor = new AesHmacEncryptor("V7GAe5ZRJ4GtxZ3S8jJLCZNQP2SXTyO4"))
                 {
-                    await encryptor.EncryptAsync(fs, output).ConfigureAwait(false);
+                    // Encrypt the original image
+                    await encryptor.EncryptAsync(fs, output).ConfigureAwait(true);
+
+                    // Find the thumbnail scalar
+                    int scalar;
+                    if (image.Width < image.Height)
+                        scalar = MAX_THUMB_SIZE / image.Height;
+                    else
+                        scalar = MAX_THUMB_SIZE / image.Width;
+
+                    // Mutate and encrypt the image
+                    image.Mutate(x => x.Resize(image.Width * scalar, image.Width * scalar));
+                    image.Save(thumbStore, new SixLabors.ImageSharp.Formats.Png.PngEncoder());
+                    await encryptor.EncryptAsync(thumbStore, thumbOutput).ConfigureAwait(true);
                 }
 
+                // Add the media to the realm
                 await _realm.WriteAsync((r) => r.Add(media));
             }
             catch (FileNotFoundException fnfex)
@@ -61,15 +85,15 @@ namespace Vault.Core.Services
                 errMessage = "Could not locate the file to import. Please try again!";
                 App.LogError("Error importing image", fnfex);
             }
-            catch (IOException ioex)
-            {
-                errMessage = "An error occured while importing. Please try again!";
-                App.LogError("Error importing image", ioex);
-            }
             catch (UnauthorizedAccessException uaex)
             {
                 errMessage = "You don't have access to that file, sorry!";
                 App.LogError("Error importing image", uaex);
+            }
+            catch (Exception ex)
+            {
+                errMessage = "An error occured while importing. Please try again!";
+                App.LogError("Error importing image", ex);
             }
 
             if (!string.IsNullOrEmpty(errMessage))
@@ -110,12 +134,12 @@ namespace Vault.Core.Services
 
         private string GetFilePath(string folder, int id)
         {
-            return Path.Combine(folder, id.ToString(), ".vault");
+            return Path.Combine(folder, id.ToString() + ".vault");
         }
 
         private string GetThumbPath(string folder, int id)
         {
-            return Path.Combine(folder, id.ToString(), ".vaultt");
+            return Path.Combine(folder, id.ToString() + ".vaultt");
         }
     }
 }
