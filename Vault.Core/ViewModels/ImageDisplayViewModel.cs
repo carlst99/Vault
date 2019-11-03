@@ -32,7 +32,7 @@ namespace Vault.Core.ViewModels
         /// <summary>
         /// Gets the number of images
         /// </summary>
-        public int ImageCount => 0;
+        public int ImageCount => Images.Count();
 
         /// <summary>
         /// Gets a value indicating whether or not an import is in progress
@@ -85,6 +85,7 @@ namespace Vault.Core.ViewModels
 
             foreach (string element in imagePaths)
                 _importService.TryImportImageAsync(element);
+            RaisePropertyChanged(nameof(ImageCount));
         }
     }
 }

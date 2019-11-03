@@ -62,13 +62,15 @@
                      IsIndeterminate="True"
                      Visibility="{Binding IsImportInProgress, Converter={StaticResource VisibilityConverter}}"/>
 
-        <ItemsControl Grid.Row="2"
-                      ItemsSource="{Binding Images, Mode=OneWay}">
-            <ItemsControl.ItemTemplate>
+        <ListView Grid.Row="2"
+                  ItemsSource="{Binding Images, Mode=OneWay}">
+            <ListView.ItemTemplate>
                 <DataTemplate DataType="{x:Type dbModel:Media}">
-                    <Image Source="{Binding FilePath, Converter={StaticResource PathToImageConverter}}"/>
+                    <StackPanel>
+                        <Image Source="{Binding ThumbPath, Converter={StaticResource PathToImageConverter}}"/>
+                    </StackPanel>
                 </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+            </ListView.ItemTemplate>
+        </ListView>
     </Grid>
 </views:MvxWpfView>

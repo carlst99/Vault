@@ -18,13 +18,11 @@ namespace Vault.Wpf.Views
         protected override BitmapFrame Convert(string value, Type targetType, object parameter, CultureInfo culture)
         {
             using (FileStream fs = new FileStream(value, FileMode.Open, FileAccess.Read))
-            using (FileStream output = new FileStream("C:\\Users\\carls\\Pictures\\output.png", FileMode.CreateNew, FileAccess.Write))
             using (var encryptor = new AesHmacEncryptor("V7GAe5ZRJ4GtxZ3S8jJLCZNQP2SXTyO4"))
-            using (MemoryStream ms = new MemoryStream())
             {
-                encryptor.DecryptAsync(fs, output);
-                return null;
-                //return BitmapFrame.Create(ms, BitmapCreateOptions.DelayCreation, BitmapCacheOption.OnDemand);
+                MemoryStream ms = new MemoryStream();
+                encryptor.DecryptAsync(fs, ms).Wait();
+                return BitmapFrame.Create(ms, BitmapCreateOptions.DelayCreation, BitmapCacheOption.OnDemand);
             }
         }
     }

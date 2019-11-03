@@ -16,7 +16,7 @@ namespace Vault.Core.Services
     {
         public const string IMAGE_FOLDER_NAME = "0";
         public const string VIDEO_FOLDER_NAME = "0";
-        public const int MAX_THUMB_SIZE = 256;
+        public const double MAX_THUMB_SIZE = 256d;
 
         private readonly IMvxMessenger _messenger;
         private readonly Realm _realm;
@@ -55,25 +55,28 @@ namespace Vault.Core.Services
 
                 // Load, encrypt and save the file and thumbnail
                 using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
-                using (FileStream output = new FileStream(media.FilePath, FileMode.CreateNew, FileAccess.Write))
-                using (MemoryStream thumbStore = new MemoryStream())
-                using (FileStream thumbOutput = new FileStream(media.ThumbPath, FileMode.CreateNew, FileAccess.Write))
+                using (FileStream output = new FileStream(media.FilePath, FileMode.CreateNew, FileAccess.ReadWrite))
                 using (Image image = Image.Load(fs))
+                using (MemoryStream thumbStore = new MemoryStream())
+                using (FileStream thumbOutput = new FileStream(media.ThumbPath, FileMode.CreateNew, FileAccess.ReadWrite))
                 using (var encryptor = new AesHmacEncryptor("V7GAe5ZRJ4GtxZ3S8jJLCZNQP2SXTyO4"))
                 {
+                    // Reset the position after loading the image
+                    fs.Position = 0;
                     // Encrypt the original image
                     await encryptor.EncryptAsync(fs, output).ConfigureAwait(true);
 
                     // Find the thumbnail scalar
-                    int scalar;
+                    double scalar;
                     if (image.Width < image.Height)
                         scalar = MAX_THUMB_SIZE / image.Height;
                     else
                         scalar = MAX_THUMB_SIZE / image.Width;
 
                     // Mutate and encrypt the image
-                    image.Mutate(x => x.Resize(image.Width * scalar, image.Width * scalar));
+                    image.Mutate(x => x.Resize((int)(image.Width * scalar), (int)(image.Height * scalar)));
                     image.Save(thumbStore, new SixLabors.ImageSharp.Formats.Png.PngEncoder());
+                    thumbStore.Position = 0;
                     await encryptor.EncryptAsync(thumbStore, thumbOutput).ConfigureAwait(true);
                 }
 
