@@ -37,6 +37,14 @@
                            Text="{Binding ImageCount}"/>
                 <TextBlock Style="{StaticResource MaterialDesignBody2TextBlock}"
                            Text="{Binding [Label_Images], Mode=OneTime}"/>
+
+                <Slider x:Name="SldrThumbnailSize"
+                        Width="256"
+                        Margin="8,0,0,0"
+                        Maximum="256"
+                        Minimum="64"
+                        Orientation="Horizontal"
+                        Value="128"/>
             </StackPanel>
 
             <Button Grid.Column="2"
@@ -63,6 +71,7 @@
                      Visibility="{Binding IsImportInProgress, Converter={StaticResource VisibilityConverter}}"/>
 
         <ListView Grid.Row="2"
+                  Margin="0,8,0,0"
                   ItemsSource="{Binding Images, Mode=OneWay}">
             <ListView.ItemTemplate>
                 <DataTemplate DataType="{x:Type dbModel:Media}">
@@ -71,6 +80,14 @@
                     </StackPanel>
                 </DataTemplate>
             </ListView.ItemTemplate>
+
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ListView}}"
+                               ItemHeight="{Binding ElementName=SldrThumbnailSize, Path=Value}"
+                               ItemWidth="{Binding ElementName=SldrThumbnailSize, Path=Value}"/>
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
         </ListView>
     </Grid>
 </views:MvxWpfView>

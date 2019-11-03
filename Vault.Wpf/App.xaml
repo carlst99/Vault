@@ -23,6 +23,10 @@
                              Color="#FFFFFF"/>-->
 
             <local:NativeMvxVisibilityValueConverter x:Key="VisibilityConverter"/>
+
+            <ItemsPanelTemplate x:Key="ItemsControlWrapPanelTemplate">
+                <WrapPanel/>
+            </ItemsPanelTemplate>
         </ResourceDictionary>
     </views:MvxApplication.Resources>
 </views:MvxApplication>
