@@ -28,7 +28,7 @@ namespace Vault.Core.Services
             _realm = RealmHelpers.GetRealmInstance();
         }
 
-        public async Task<bool> TryImportImageAsync(string path)
+        public async Task<Media> TryImportImageAsync(string path)
         {
             Media media = null;
             bool success = await Task.Run(() =>
@@ -113,11 +113,16 @@ namespace Vault.Core.Services
 
             // Add the media to the realm if required
             if (success)
+            {
                 await _realm.WriteAsync((r) => r.Add(media)).ConfigureAwait(true);
-            return success;
+                return media;
+            } else
+            {
+                return null;
+            }
         }
 
-        public Task<bool> TryImportVideoAsync(string path)
+        public Task<Media> TryImportVideoAsync(string path)
         {
             throw new NotImplementedException();
         }

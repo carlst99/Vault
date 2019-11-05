@@ -3,6 +3,7 @@ using MvvmCross.Navigation;
 using MvvmCross.Plugin.Messenger;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Vault.Core.Model.DbContext;
 using Vault.Core.Model.Messages;
@@ -18,7 +19,7 @@ namespace Vault.Core.ViewModels
         private readonly IImportService _importService;
 
         private bool _isImportInProgress;
-        private IQueryable<Media> _images;
+        private ObservableCollection<Media> _images;
         private Media _selectedImage;
 
         #endregion
@@ -36,7 +37,7 @@ namespace Vault.Core.ViewModels
         /// <summary>
         /// Gets the number of images
         /// </summary>
-        public int ImageCount => Images.Count();
+        public int ImageCount => Images.Count;
 
         /// <summary>
         /// Gets a value indicating whether or not an import is in progress
@@ -50,7 +51,7 @@ namespace Vault.Core.ViewModels
         /// <summary>
         /// Gets or sets the list of images
         /// </summary>
-        public IQueryable<Media> Images
+        public ObservableCollection<Media> Images
         {
             get => _images;
             set => SetProperty(ref _images, value);
@@ -72,7 +73,7 @@ namespace Vault.Core.ViewModels
         {
             _messenger = messenger;
             _importService = importService;
-            Images = RealmHelpers.GetRealmInstance().All<Media>().Where(m => m.TypeRaw == (int)MediaType.Image);
+            UpdateImageList();
         }
 
         private void ImportImages()
@@ -95,7 +96,10 @@ namespace Vault.Core.ViewModels
                 return;
 
             foreach (string element in imagePaths)
-                await _importService.TryImportImageAsync(element).ConfigureAwait(true);
+            {
+                Media media = await _importService.TryImportImageAsync(element).ConfigureAwait(true);
+                Images.Add(media);
+            }
 
             await RaisePropertyChanged(nameof(ImageCount)).ConfigureAwait(false);
             IsImportInProgress = false;
@@ -108,8 +112,16 @@ namespace Vault.Core.ViewModels
 
         private async void RemoveImage()
         {
-            await _importService.TryRemoveMediaAsync(SelectedImage).ConfigureAwait(false);
-            await RaisePropertyChanged(nameof(ImageCount)).ConfigureAwait(false);
+            Media toRemove = SelectedImage;
+            SelectedImage = null;
+            Images.Remove(toRemove);
+            await _importService.TryRemoveMediaAsync(toRemove).ConfigureAwait(true);
+            await RaisePropertyChanged(nameof(ImageCount)).ConfigureAwait(true);
+        }
+
+        private void UpdateImageList()
+        {
+            Images = new ObservableCollection<Media>(RealmHelpers.GetRealmInstance().All<Media>().Where(m => m.TypeRaw == (int)MediaType.Image).ToList());
         }
     }
 }
