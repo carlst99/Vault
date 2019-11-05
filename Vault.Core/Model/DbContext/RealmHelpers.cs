@@ -1,6 +1,11 @@
 ﻿using Realms;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading.Tasks;
+using Vault.Core.Services;
 
 namespace Vault.Core.Model.DbContext
 {
@@ -8,9 +13,10 @@ namespace Vault.Core.Model.DbContext
     {
         private static readonly Dictionary<Type, int> _currentIds = new Dictionary<Type, int>();
 
+#if DEBUG
         public static Realm GetRealmInstance()
         {
-            string realmPath = App.GetAppdataFilePath("Vault.realm");
+            string realmPath = App.GetAppdataFilePath("VaultDebug.realm");
 
             RealmConfiguration config = new RealmConfiguration(realmPath)
             {
@@ -24,6 +30,36 @@ namespace Vault.Core.Model.DbContext
             };
             return Realm.GetInstance(config);
         }
+#else
+        private static byte[] _encryptionKey;
+
+        public static Realm GetRealmInstance()
+        {
+            string realmPath = App.GetAppdataFilePath("Vault.realm");
+            if (_encryptionKey == null)
+                throw new InvalidOperationException("An encryption key has not yet been set");
+
+            RealmConfiguration config = new RealmConfiguration(realmPath)
+            {
+                EncryptionKey = _encryptionKey
+            };
+            return Realm.GetInstance(config);
+        }
+
+        public static async Task SetEncryptionKeyAsync(string password)
+        {
+            await Task.Run(() =>
+            {
+                using (StreamReader sr = new StreamReader(PasswordService.SALT_FILE_LOCATION))
+                {
+                    string salt = sr.ReadLine();
+                    byte[] saltBytes = Encoding.UTF8.GetBytes(salt);
+                    using (Rfc2898DeriveBytes hasher = new Rfc2898DeriveBytes(password, saltBytes))
+                        _encryptionKey = hasher.GetBytes(64);
+                }
+            }).ConfigureAwait(false);
+        }
+#endif
 
         public static int GetNextId<T>(Realm realm = null) where T : RealmObject, IContextItem
         {

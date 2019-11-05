@@ -20,12 +20,10 @@ namespace Vault.Core.Services
         public static readonly string VIDEO_FOLDER_PATH = App.GetAppdataFilePath("1");
 
         private readonly IMvxMessenger _messenger;
-        private readonly Realm _realm;
 
         public ImportService(IMvxMessenger messenger)
         {
             _messenger = messenger;
-            _realm = RealmHelpers.GetRealmInstance();
         }
 
         public async Task<Media> TryImportImageAsync(string path)
@@ -114,7 +112,8 @@ namespace Vault.Core.Services
             // Add the media to the realm if required
             if (success)
             {
-                await _realm.WriteAsync((r) => r.Add(media)).ConfigureAwait(true);
+                Realm realm = RealmHelpers.GetRealmInstance();
+                await realm.WriteAsync((r) => r.Add(media)).ConfigureAwait(true);
                 return media;
             } else
             {
@@ -148,7 +147,8 @@ namespace Vault.Core.Services
                     File.Delete(thumbPath);
                 }).ConfigureAwait(true);
 
-                await _realm.WriteAsync((r) => r.Remove(r.All<Media>().First(m => m.Id == id))).ConfigureAwait(true);
+                Realm realm = RealmHelpers.GetRealmInstance();
+                await realm.WriteAsync((r) => r.Remove(r.All<Media>().First(m => m.Id == id))).ConfigureAwait(true);
                 return true;
             }
             catch (Exception ex)

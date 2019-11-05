@@ -1,10 +1,12 @@
 ﻿using MvvmCross.Commands;
 using MvvmCross.Navigation;
 using MvvmCross.Plugin.Messenger;
+using Realms;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using Vault.Core.Model.DbContext;
 using Vault.Core.Model.Messages;
 using Vault.Core.Services;
@@ -121,7 +123,8 @@ namespace Vault.Core.ViewModels
 
         private void UpdateImageList()
         {
-            Images = new ObservableCollection<Media>(RealmHelpers.GetRealmInstance().All<Media>().Where(m => m.TypeRaw == (int)MediaType.Image).ToList());
+            Realm realm = RealmHelpers.GetRealmInstance();
+            Images = new ObservableCollection<Media>(realm.All<Media>().Where(m => m.TypeRaw == (int)MediaType.Image).ToList());
         }
     }
 }

@@ -1,10 +1,11 @@
 ﻿using MvvmCross.Commands;
 using MvvmCross.Navigation;
+#if RELEASE
 using MvvmCross.Plugin.Messenger;
-using System.Diagnostics;
-using System.Threading.Tasks;
+using Vault.Core.Model.DbContext;
 using Vault.Core.Model.Messages;
 using Vault.Core.Services;
+#endif
 
 namespace Vault.Core.ViewModels
 {
@@ -12,8 +13,10 @@ namespace Vault.Core.ViewModels
     {
         #region Fields
 
+#if RELEASE
         private readonly IPasswordService _passwordService;
         private readonly IMvxMessenger _messenger;
+#endif
 
         private string _password;
 
@@ -38,21 +41,29 @@ namespace Vault.Core.ViewModels
 
         #endregion
 
+#if DEBUG
+        public HomeViewModel(IMvxNavigationService navigationService)
+            : base(navigationService)
+        {
+        }
+#else
         public HomeViewModel(IMvxNavigationService navigationService, IPasswordService passwordService, IMvxMessenger messenger)
             : base(navigationService)
         {
             _passwordService = passwordService;
             _messenger = messenger;
         }
+#endif
 
-        private void OnUnlock()
+        private async void OnUnlock()
         {
 #if DEBUG
-            NavigationService.Navigate<HubViewModel>();
+            await NavigationService.Navigate<HubViewModel>().ConfigureAwait(false);
 #else
-            if (_passwordService.VerifyPassword(Password))
+            if (await _passwordService.TryVerifyPasswordAsync(Password).ConfigureAwait(false))
             {
-                NavigationService.Navigate<HubViewModel>();
+                await RealmHelpers.SetEncryptionKeyAsync(Password).ConfigureAwait(false);
+                await NavigationService.Navigate<HubViewModel>().ConfigureAwait(false);
             }
             else
             {

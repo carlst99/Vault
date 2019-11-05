@@ -1,66 +1,57 @@
-﻿using Realms;
-using Serilog;
+﻿using Serilog;
 using System;
-using System.Linq;
-using Vault.Core.Model.DbContext;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace Vault.Core.Services
 {
     public class PasswordService : IPasswordService
     {
-        public bool TryChangePassword(string oldPassword, string newPassword)
-        {
-            Realm realm = RealmHelpers.GetRealmInstance();
-            IQueryable<Password> passwords = realm.All<Password>();
+        private static readonly string HASH_FILE_LOCATION = App.GetAppdataFilePath("hash");
+        public static readonly string SALT_FILE_LOCATION = App.GetAppdataFilePath("salt");
 
-            if (passwords.Count() == 0) // No password in storage, need to set new one
+        public async Task<bool> TryChangePasswordAsync(string oldPassword, string newPassword)
+        {
+            if (!File.Exists(HASH_FILE_LOCATION)) // No password in storage, need to set new one
             {
-                return TrySetPassword(newPassword);
+                return await TrySetPasswordAsync(newPassword).ConfigureAwait(false);
             } else
             {
                 // Check that old password matches that in database
-                if (!VerifyPassword(oldPassword))
+                if (!await TryVerifyPasswordAsync(oldPassword).ConfigureAwait(false))
                     return false;
 
-                return TrySetPassword(newPassword);
+                return await TrySetPasswordAsync(newPassword).ConfigureAwait(false);
             }
         }
 
-        public bool VerifyPassword(string password)
+        public async Task<bool> TryVerifyPasswordAsync(string password)
         {
-            Realm realm = RealmHelpers.GetRealmInstance();
-            IQueryable<Password> passwords = realm.All<Password>();
-
-            if (passwords.Count() == 1)
+            return await Task.Run(() =>
             {
-                Password stored = passwords.First();
-                return BCrypt.Net.BCrypt.EnhancedVerify(password, stored.Hash);
-            } else
-            {
-                return false;
-            }
+                if (File.Exists(HASH_FILE_LOCATION))
+                {
+                    using (StreamReader sr = new StreamReader(HASH_FILE_LOCATION))
+                        return BCrypt.Net.BCrypt.EnhancedVerify(password, sr.ReadLine());
+                }
+                else
+                {
+                    throw new InvalidOperationException("A password has not yet been set!");
+                }
+            }).ConfigureAwait(false);
         }
 
-        private bool TrySetPassword(string password)
+        private async Task<bool> TrySetPasswordAsync(string password)
         {
             try
             {
-                Realm realm = RealmHelpers.GetRealmInstance();
-                IQueryable<Password> passwords = realm.All<Password>();
                 string hashedPassword = BCrypt.Net.BCrypt.EnhancedHashPassword(password);
-
-                if (passwords.Count() == 1) // Update an existing password
-                {
-                    Password stored = passwords.First();
-                    realm.Write(() => stored.Hash = hashedPassword);
-                } else // Add a new password
-                {
-                    Password p = new Password
-                    {
-                        Hash = hashedPassword
-                    };
-                    realm.Write(() => realm.Add(p));
-                }
+                // Save the hashed password
+                using (StreamWriter sw = new StreamWriter(HASH_FILE_LOCATION))
+                    await sw.WriteLineAsync(hashedPassword).ConfigureAwait(false);
+                // Save a salt to use when deriving the password into bytes for opening the realm and encryptor
+                using (StreamWriter sw = new StreamWriter(SALT_FILE_LOCATION))
+                    await sw.WriteLineAsync(BCrypt.Net.BCrypt.GenerateSalt()).ConfigureAwait(false);
                 return true;
             } catch (Exception ex)
             {
