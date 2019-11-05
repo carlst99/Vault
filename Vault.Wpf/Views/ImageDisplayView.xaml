@@ -29,6 +29,7 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
+            <!-- Detail / view control -->
             <StackPanel Margin="8"
                         VerticalAlignment="Center"
                         Orientation="Horizontal">
@@ -45,22 +46,50 @@
                         Minimum="64"
                         Orientation="Horizontal"
                         Value="128"/>
+
+                <TextBlock Margin="8,0,0,0"
+                           Style="{StaticResource MaterialDesignBody2TextBlock}"
+                           Text="{Binding SelectedImage.Name}"/>
             </StackPanel>
 
-            <Button Grid.Column="2"
-                    Margin="8"
-                    HorizontalAlignment="Right"
-                    Command="{Binding ImportImagesCommand}">
-                <Button.Content>
-                    <StackPanel Orientation="Horizontal">
-                        <md:PackIcon Kind="Import"/>
-                        <TextBlock Margin="4,0,0,0"
-                                   Text="{Binding [Command_ImportImages], Mode=OneTime}"/>
-                    </StackPanel>
-                </Button.Content>
-            </Button>
+            <!-- Image modification -->
+            <StackPanel Grid.Column="2" Orientation="Horizontal">
+                <Button Margin="4,8,4,8"
+                        Command="{Binding ExportImageCommand}">
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <md:PackIcon Kind="Export"/>
+                            <TextBlock Margin="4,0,0,0"
+                                       Text="{Binding [Command_ExportMedia], Mode=OneTime}"/>
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
+
+                <Button Margin="4,8,4,8"
+                        Command="{Binding RemoveImageCommand}">
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <md:PackIcon Kind="Delete"/>
+                            <TextBlock Margin="4,0,0,0"
+                                       Text="{Binding [Command_DeleteMedia], Mode=OneTime}"/>
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
+
+                <Button Margin="4,8,8,8"
+                        Command="{Binding ImportImagesCommand}">
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <md:PackIcon Kind="Import"/>
+                            <TextBlock Margin="4,0,0,0"
+                                       Text="{Binding [Command_ImportMedia], Mode=OneTime}"/>
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
+            </StackPanel>
         </Grid>
 
+        <!-- Progress bar / divider -->
         <Border Grid.Row="1"
                 Margin="32,0,32,0"
                 BorderBrush="#DDDDDD"
@@ -70,9 +99,11 @@
                      IsIndeterminate="True"
                      Visibility="{Binding IsImportInProgress, Converter={StaticResource VisibilityConverter}}"/>
 
+        <!-- Image view -->
         <ListView Grid.Row="2"
                   Margin="0,8,0,0"
-                  ItemsSource="{Binding Images, Mode=OneWay}">
+                  ItemsSource="{Binding Images, Mode=OneWay}"
+                  SelectedItem="{Binding SelectedImage}">
             <ListView.ItemTemplate>
                 <DataTemplate DataType="{x:Type dbModel:Media}">
                     <StackPanel>

@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Vault.Core.Model.DbContext;
 
 namespace Vault.Core.Services
 {
@@ -6,5 +7,6 @@ namespace Vault.Core.Services
     {
         Task<bool> TryImportImageAsync(string path);
         Task<bool> TryImportVideoAsync(string path);
+        Task<bool> TryRemoveMediaAsync(Media item);
     }
 }

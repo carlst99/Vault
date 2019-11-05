@@ -61,11 +61,29 @@ namespace Vault.Core.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Import Images.
+        ///   Looks up a localized string similar to Delete.
         /// </summary>
-        public static string Command_ImportImages {
+        public static string Command_DeleteMedia {
             get {
-                return ResourceManager.GetString("Command_ImportImages", resourceCulture);
+                return ResourceManager.GetString("Command_DeleteMedia", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Export.
+        /// </summary>
+        public static string Command_ExportMedia {
+            get {
+                return ResourceManager.GetString("Command_ExportMedia", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import.
+        /// </summary>
+        public static string Command_ImportMedia {
+            get {
+                return ResourceManager.GetString("Command_ImportMedia", resourceCulture);
             }
         }
         
