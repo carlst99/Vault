@@ -4,9 +4,7 @@ using MvvmCross.Plugin.Messenger;
 using Realms;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
 using Vault.Core.Model.DbContext;
 using Vault.Core.Model.Messages;
 using Vault.Core.Services;
@@ -21,7 +19,7 @@ namespace Vault.Core.ViewModels
         private readonly IImportService _importService;
 
         private bool _isImportInProgress;
-        private ObservableCollection<Media> _images;
+        private List<Media> _images;
         private Media _selectedImage;
 
         #endregion
@@ -53,7 +51,7 @@ namespace Vault.Core.ViewModels
         /// <summary>
         /// Gets or sets the list of images
         /// </summary>
-        public ObservableCollection<Media> Images
+        public List<Media> Images
         {
             get => _images;
             set => SetProperty(ref _images, value);
@@ -100,9 +98,9 @@ namespace Vault.Core.ViewModels
             foreach (string element in imagePaths)
             {
                 Media media = await _importService.TryImportImageAsync(element).ConfigureAwait(true);
-                Images.Add(media);
             }
 
+            UpdateImageList();
             await RaisePropertyChanged(nameof(ImageCount)).ConfigureAwait(false);
             IsImportInProgress = false;
         }
@@ -116,15 +114,15 @@ namespace Vault.Core.ViewModels
         {
             Media toRemove = SelectedImage;
             SelectedImage = null;
-            Images.Remove(toRemove);
             await _importService.TryRemoveMediaAsync(toRemove).ConfigureAwait(true);
+            UpdateImageList();
             await RaisePropertyChanged(nameof(ImageCount)).ConfigureAwait(true);
         }
 
         private void UpdateImageList()
         {
             Realm realm = RealmHelpers.GetRealmInstance();
-            Images = new ObservableCollection<Media>(realm.All<Media>().Where(m => m.TypeRaw == (int)MediaType.Image).ToList());
+            Images = realm.All<Media>().Where(m => m.TypeRaw == (int)MediaType.Image).ToList();
         }
     }
 }
