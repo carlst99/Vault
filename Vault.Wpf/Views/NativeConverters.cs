@@ -6,14 +6,17 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Windows.Media.Imaging;
+using Vault.Core.Converters;
 
 namespace Vault.Wpf.Views
 {
     public class NativeMvxVisibilityValueConverter : MvxNativeValueConverter<MvxVisibilityValueConverter> { }
 
-    public class NativePathToImageConverter : MvxNativeValueConverter<PathToImageConverter> { }
+    public class NativePathToImageValueConverter : MvxNativeValueConverter<PathToImageValueConverter> { }
 
-    public class PathToImageConverter : MvxValueConverter<string, BitmapFrame>
+    public class NativeBoolInverterValueConverter : MvxNativeValueConverter<BoolInverterValueConverter> { }
+
+    public class PathToImageValueConverter : MvxValueConverter<string, BitmapFrame>
     {
         protected override BitmapFrame Convert(string value, Type targetType, object parameter, CultureInfo culture)
         {

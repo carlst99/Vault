@@ -93,7 +93,10 @@ namespace Vault.Core.ViewModels
         private async void CompleteImport(FileMessage.DialogResult result, IEnumerable<string> imagePaths)
         {
             if (result == FileMessage.DialogResult.Failed)
+            {
+                IsImportInProgress = false;
                 return;
+            }
 
             foreach (string element in imagePaths)
             {

@@ -19,11 +19,6 @@
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignExtensions;component/Themes/MaterialDesignLightTheme.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
-            <!--<SolidColorBrush x:Key="PrimaryHueMidForegroundBrush"
-                             Color="#FFFFFF"/>-->
-
-            <local:NativeMvxVisibilityValueConverter x:Key="VisibilityConverter"/>
-
             <ItemsPanelTemplate x:Key="ItemsControlWrapPanelTemplate">
                 <WrapPanel/>
             </ItemsPanelTemplate>

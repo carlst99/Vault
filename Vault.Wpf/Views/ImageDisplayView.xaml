@@ -13,7 +13,8 @@
 
     <views:MvxWpfView.Resources>
         <local:NativeMvxVisibilityValueConverter x:Key="VisibilityConverter"/>
-        <local:NativePathToImageConverter x:Key="PathToImageConverter"/>
+        <local:NativePathToImageValueConverter x:Key="PathToImageConverter"/>
+        <local:NativeBoolInverterValueConverter x:Key="BoolInverterConverter"/>
     </views:MvxWpfView.Resources>
 
     <Grid>
@@ -53,7 +54,8 @@
             </StackPanel>
 
             <!-- Image modification -->
-            <StackPanel Grid.Column="2" Orientation="Horizontal">
+            <StackPanel Grid.Column="2"
+                        Orientation="Horizontal">
                 <Button Margin="4,8,4,8"
                         Command="{Binding ExportImageCommand}">
                     <Button.Content>
@@ -77,7 +79,8 @@
                 </Button>
 
                 <Button Margin="4,8,8,8"
-                        Command="{Binding ImportImagesCommand}">
+                        Command="{Binding ImportImagesCommand}"
+                        IsEnabled="{Binding IsImportInProgress, Converter={StaticResource BoolInverterConverter}}">
                     <Button.Content>
                         <StackPanel Orientation="Horizontal">
                             <md:PackIcon Kind="Import"/>
