@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="BCrypt.Net-Next" Version="3.2.1" />
     <PackageReference Include="MvvmCross" Version="6.4.1" />
     <PackageReference Include="MvvmCross.CodeAnalysis" Version="6.4.1" />
     <PackageReference Include="MvvmCross.Plugin.Messenger" Version="6.4.1" />

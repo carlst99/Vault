@@ -42,6 +42,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BCrypt.Net-Next, Version=3.2.1.0, Culture=neutral, PublicKeyToken=1e11be04b6288443, processorArchitecture=MSIL">
+      <HintPath>..\packages\BCrypt.Net-Next.3.2.1\lib\net472\BCrypt.Net-Next.dll</HintPath>
+    </Reference>
     <Reference Include="BespokeFusion, Version=1.0.1.10, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MaterialMessageBox.1.0.0.11\lib\BespokeFusion.dll</HintPath>
     </Reference>
@@ -185,8 +188,12 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Setup.cs" />
+    <Compile Include="UI\PasswordBoxAssistant.cs" />
     <Compile Include="Views\HomeView.xaml.cs">
       <DependentUpon>HomeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\HubView.xaml.cs">
+      <DependentUpon>HubView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ImageDisplayView.xaml.cs">
       <DependentUpon>ImageDisplayView.xaml</DependentUpon>
@@ -210,6 +217,10 @@
     <Page Include="Views\HomeView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\HubView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ImageDisplayView.xaml">
       <Generator>MSBuild:Compile</Generator>

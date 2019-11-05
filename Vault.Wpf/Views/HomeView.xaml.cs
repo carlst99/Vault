@@ -8,5 +8,10 @@ namespace Vault.Wpf.Views
         {
             InitializeComponent();
         }
+
+        private void MvxWpfView_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        {
+            PswdBx.Focus();
+        }
     }
 }

@@ -1,77 +1,69 @@
 ﻿using MvvmCross.Commands;
 using MvvmCross.Navigation;
-using MvvmCrossExtensions.Wpf.Presenters.MasterDetail;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using MvvmCross.Plugin.Messenger;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using Vault.Core.Model.Messages;
+using Vault.Core.Services;
 
 namespace Vault.Core.ViewModels
 {
-    public class HomeViewModel : Base.ViewModelBase, IMasterPresentationViewModel
+    public class HomeViewModel : Base.ViewModelBase
     {
         #region Fields
 
-        private object _detailView;
-        private int _selectedPageIndex;
+        private readonly IPasswordService _passwordService;
+        private readonly IMvxMessenger _messenger;
+
+        private string _password;
 
         #endregion
 
         #region Commands
 
-        public IMvxCommand OnNavigationRequestedCommand => new MvxCommand<Type>(OnNavigateRequested);
+        public IMvxCommand OnUnlockCommand => new MvxCommand(OnUnlock);
 
         #endregion
 
         #region Properties
 
         /// <summary>
-        /// Gets or sets the detail view of this master view
+        /// Gets or sets the user password
         /// </summary>
-        public object DetailView
+        public string Password
         {
-            get => _detailView;
-            set => SetProperty(ref _detailView, value);
+            get => _password;
+            set => SetProperty(ref _password, value);
         }
-
-        /// <summary>
-        /// Gets or sets the index of the selected navigation item
-        /// </summary>
-        public int SelectedPageIndex
-        {
-            get => _selectedPageIndex;
-            set => SetProperty(ref _selectedPageIndex, value);
-        }
-
-        /// <summary>
-        /// Gets a dictionary of navigatable viewmodel types, and their friendly name
-        /// </summary>
-        public Dictionary<Type, string> NavigationItems { get; }
 
         #endregion
 
-        public HomeViewModel(IMvxNavigationService navigationService)
+        public HomeViewModel(IMvxNavigationService navigationService, IPasswordService passwordService, IMvxMessenger messenger)
             : base(navigationService)
         {
-            NavigationItems = new Dictionary<Type, string>()
-            {
-                { typeof(ImageDisplayViewModel), "Images" },
-                { typeof(VideoDisplayViewModel), "Videos" }
-            };
+            _passwordService = passwordService;
+            _messenger = messenger;
         }
 
-        public override void ViewAppearing()
+        private void OnUnlock()
         {
-            base.ViewAppearing();
-            if (NavigationItems.Count > 0)
+#if DEBUG
+            NavigationService.Navigate<HubViewModel>();
+#else
+            if (_passwordService.VerifyPassword(Password))
             {
-                OnNavigateRequested(NavigationItems.Keys.First());
-                SelectedPageIndex = 0;
+                NavigationService.Navigate<HubViewModel>();
             }
-        }
-
-        private void OnNavigateRequested(Type navigationItem)
-        {
-            NavigationService.Navigate(navigationItem);
+            else
+            {
+                _messenger.Publish(
+                    new DialogMessage(
+                        this,
+                        "Incorrect Password!", "That's the wrong password. Please check the Caps Lock status of your computer and try again",
+                        DialogMessage.DialogMessageType.Error));
+                Password = string.Empty;
+            }
+#endif
         }
     }
 }

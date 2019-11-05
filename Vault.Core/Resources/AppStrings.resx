@@ -129,6 +129,10 @@
     <value>Import</value>
     <comment>This label appears on a control allowing the user to import media items</comment>
   </data>
+  <data name="Command_Unlock" xml:space="preserve">
+    <value>Unlock</value>
+    <comment>This label appears on a control which allows the user to unlock their vault</comment>
+  </data>
   <data name="Label_Images" xml:space="preserve">
     <value>Images</value>
     <comment>This label says images</comment>

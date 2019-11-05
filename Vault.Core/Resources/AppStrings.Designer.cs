@@ -88,6 +88,15 @@ namespace Vault.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unlock.
+        /// </summary>
+        public static string Command_Unlock {
+            get {
+                return ResourceManager.GetString("Command_Unlock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Images.
         /// </summary>
         public static string Label_Images {
