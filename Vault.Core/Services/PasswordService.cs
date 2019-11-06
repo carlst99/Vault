@@ -36,7 +36,7 @@ namespace Vault.Core.Services
                 }
                 else
                 {
-                    throw new InvalidOperationException("A password has not yet been set!");
+                    throw App.CreateError<InvalidOperationException>("A password has not yet been set!");
                 }
             }).ConfigureAwait(false);
         }

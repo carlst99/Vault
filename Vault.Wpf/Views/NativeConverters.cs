@@ -1,12 +1,12 @@
 ﻿using MvvmCross.Converters;
 using MvvmCross.Platforms.Wpf.Converters;
 using MvvmCross.Plugin.Visibility;
-using StreamEncryptor.Predefined;
 using System;
 using System.Globalization;
 using System.IO;
 using System.Windows.Media.Imaging;
 using Vault.Core.Converters;
+using Vault.Core.Services;
 
 namespace Vault.Wpf.Views
 {
@@ -21,10 +21,9 @@ namespace Vault.Wpf.Views
         protected override BitmapFrame Convert(string value, Type targetType, object parameter, CultureInfo culture)
         {
             using (FileStream fs = new FileStream(value, FileMode.Open, FileAccess.Read))
-            using (var encryptor = new AesHmacEncryptor("V7GAe5ZRJ4GtxZ3S8jJLCZNQP2SXTyO4"))
             {
                 MemoryStream ms = new MemoryStream();
-                encryptor.DecryptAsync(fs, ms).Wait();
+                EncryptorAssistant.GetEncryptor().DecryptAsync(fs, ms).Wait();
                 return BitmapFrame.Create(ms, BitmapCreateOptions.DelayCreation, BitmapCacheOption.OnDemand);
             }
         }

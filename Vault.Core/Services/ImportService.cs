@@ -28,7 +28,9 @@ namespace Vault.Core.Services
 
         public async Task<Media> TryImportImageAsync(string path)
         {
+            AesHmacEncryptor encryptor = EncryptorAssistant.GetEncryptor();
             Media media = null;
+
             bool success = await Task.Run(() =>
             {
                 // Check that the image store folder exists, and try to create one if not
@@ -38,7 +40,7 @@ namespace Vault.Core.Services
                 // Check that the file to import exists
                 if (!File.Exists(path))
                 {
-                    Log.Information("Import - Could not find the image to import: {image}", path);
+                    Log.Information("Import - Could not locate the image to import");
                     ShowErrorDialog("Could not locate the file to import. Please check it is not being used by any other programs");
                     return false;
                 }
@@ -61,7 +63,6 @@ namespace Vault.Core.Services
                     using (Image image = Image.Load(fs))
                     using (MemoryStream thumbStore = new MemoryStream())
                     using (FileStream thumbOutput = new FileStream(media.ThumbPath, FileMode.CreateNew, FileAccess.ReadWrite))
-                    using (var encryptor = new AesHmacEncryptor("V7GAe5ZRJ4GtxZ3S8jJLCZNQP2SXTyO4"))
                     {
                         // Reset the position after loading the image
                         fs.Position = 0;
@@ -126,12 +127,17 @@ namespace Vault.Core.Services
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Tries to remove a media item from the store
+        /// </summary>
+        /// <param name="item">The item to remove</param>
+        /// <returns>A value indicating whether or not the operation was successful</returns>
         public async Task<bool> TryRemoveMediaAsync(Media item)
         {
             // Check that the file to import exists
             if (!File.Exists(item.FilePath) || !File.Exists(item.ThumbPath))
             {
-                Log.Information("Remove - Could not find the image to remove: {id}", item.Id);
+                Log.Information("Remove - Could not find the file to remove: {id}", item.Id);
                 ShowErrorDialog("An error occured while removing the file");
                 return false;
             }
@@ -153,7 +159,7 @@ namespace Vault.Core.Services
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Error removing image");
+                Log.Error(ex, "Error removing file");
                 ShowErrorDialog("An error occured while removing the file");
                 return false;
             }

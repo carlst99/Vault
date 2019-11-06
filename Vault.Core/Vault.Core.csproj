@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Description>Provides the structure for a MvvmCross Core project</Description>
+    <Configurations>Debug;Release;Debug_Passwords</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

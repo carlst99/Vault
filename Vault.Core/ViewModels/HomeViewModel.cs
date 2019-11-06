@@ -1,6 +1,6 @@
 ﻿using MvvmCross.Commands;
 using MvvmCross.Navigation;
-#if RELEASE
+#if !DEBUG
 using MvvmCross.Plugin.Messenger;
 using Vault.Core.Model.DbContext;
 using Vault.Core.Model.Messages;
@@ -13,7 +13,7 @@ namespace Vault.Core.ViewModels
     {
         #region Fields
 
-#if RELEASE
+#if !DEBUG
         private readonly IPasswordService _passwordService;
         private readonly IMvxMessenger _messenger;
 #endif
@@ -63,6 +63,7 @@ namespace Vault.Core.ViewModels
             if (await _passwordService.TryVerifyPasswordAsync(Password).ConfigureAwait(false))
             {
                 await RealmHelpers.SetEncryptionKeyAsync(Password).ConfigureAwait(false);
+                EncryptorAssistant.SetEncryptorPassword(Password);
                 await NavigationService.Navigate<HubViewModel>().ConfigureAwait(false);
             }
             else

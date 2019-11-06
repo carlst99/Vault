@@ -1,11 +1,13 @@
 ﻿using Realms;
 using System;
 using System.Collections.Generic;
+#if !DEBUG
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Vault.Core.Services;
+#endif
 
 namespace Vault.Core.Model.DbContext
 {
@@ -37,7 +39,7 @@ namespace Vault.Core.Model.DbContext
         {
             string realmPath = App.GetAppdataFilePath("Vault.realm");
             if (_encryptionKey == null)
-                throw new InvalidOperationException("An encryption key has not yet been set");
+                throw App.CreateError<InvalidOperationException>("An encryption key has not yet been set");
 
             RealmConfiguration config = new RealmConfiguration(realmPath)
             {
