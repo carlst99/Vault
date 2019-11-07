@@ -11,6 +11,9 @@
                   x:Name="PageRoot"
                   d:DesignHeight="450"
                   d:DesignWidth="800"
+                  KeyDown="Page_KeyDown"
+                  RenderOptions.BitmapScalingMode="HighQuality"
+                  UseLayoutRounding="True"
                   mc:Ignorable="d">
 
     <views:MvxWpfView.Resources>
@@ -19,27 +22,33 @@
         <local:NativeBoolInverterValueConverter x:Key="BoolInverterConverter"/>
     </views:MvxWpfView.Resources>
 
-    <md:DialogHost x:Name="DlgHst"
-                   CloseOnClickAway="True"
-                   IsOpen="{Binding IsDialogOpen}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-        <md:DialogHost.DialogContent>
-            <Grid MinWidth="800"
-                  MinHeight="500"
-                  HorizontalAlignment="Center"
-                  VerticalAlignment="Center"
-                  Focusable="False">
+        <!-- Image Popup -->
+        <Popup x:Name="PopImage"
+               AllowsTransparency="True"
+               Closed="PopImage_Closed"
+               IsOpen="{Binding IsDialogOpen}"
+               Opened="PopImage_Opened"
+               Placement="Center"
+               PopupAnimation="Fade"
+               StaysOpen="False">
+
+            <Grid x:Name="GrdImageContainer"
+                  Background="{StaticResource MaterialDesignBackground}">
                 <Image Margin="4"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center"
                        Source="{Binding SelectedImage.FilePath, Converter={StaticResource PathToImageConverter}}"
-                       Stretch="Uniform"/>
+                       Stretch="None"/>
 
                 <Grid x:Name="GrdImageCycleLeft"
                       HorizontalAlignment="Left"
                       VerticalAlignment="Stretch"
-                      Background="#66FFFFFF"
-                      Opacity="0">
+                      Background="#66FFFFFF">
                     <Button Margin="8"
                             VerticalAlignment="Center"
                             Command="{Binding CycleImageLeftCommand}"
@@ -76,12 +85,17 @@
                 <Grid x:Name="GrdImageCycleRight"
                       HorizontalAlignment="Right"
                       VerticalAlignment="Stretch"
-                      Background="#66FFFFFF"
-                      Opacity="0">
+                      Background="#66FFFFFF">
                     <Button Margin="8"
                             VerticalAlignment="Center"
                             Command="{Binding CycleImageRightCommand}"
                             Content="{md:PackIcon Kind=ArrowRightCircle}"
+                            Focusable="False"
+                            Style="{StaticResource MaterialDesignIconButton}"/>
+                    <Button Margin="8"
+                            VerticalAlignment="Top"
+                            Command="{Binding CloseDialogCommand}"
+                            Content="{md:PackIcon Kind=CloseCircle}"
                             Focusable="False"
                             Style="{StaticResource MaterialDesignIconButton}"/>
 
@@ -111,121 +125,128 @@
                     </Grid.Triggers>
                 </Grid>
             </Grid>
-        </md:DialogHost.DialogContent>
 
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
+            <Popup.Resources>
+                <Storyboard x:Key="PopupOpenedStoryboard">
+                    <DoubleAnimation BeginTime="0:0:0.5"
+                                     Storyboard.Target="{Binding ElementName=GrdImageCycleLeft}"
+                                     Storyboard.TargetProperty="Opacity"
+                                     From="1"
+                                     To="0"
+                                     Duration="0:0:1"/>
+                    <DoubleAnimation BeginTime="0:0:0.5"
+                                     Storyboard.Target="{Binding ElementName=GrdImageCycleRight}"
+                                     Storyboard.TargetProperty="Opacity"
+                                     From="1"
+                                     To="0"
+                                     Duration="0:0:1"/>
+                </Storyboard>
+            </Popup.Resources>
+        </Popup>
 
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
 
-                <!-- Detail / view control -->
-                <StackPanel Margin="8"
-                            VerticalAlignment="Center"
-                            Orientation="Horizontal">
-                    <TextBlock Margin="0,0,4,0"
-                               Style="{StaticResource MaterialDesignBody2TextBlock}"
-                               Text="{Binding ImageCount}"/>
-                    <TextBlock Style="{StaticResource MaterialDesignBody2TextBlock}"
-                               Text="{Binding [Label_Images], Mode=OneTime}"/>
+            <!-- Detail / view control -->
+            <StackPanel Margin="8"
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal">
+                <TextBlock Margin="0,0,4,0"
+                           Style="{StaticResource MaterialDesignBody2TextBlock}"
+                           Text="{Binding ImageCount}"/>
+                <TextBlock Style="{StaticResource MaterialDesignBody2TextBlock}"
+                           Text="{Binding [Label_Images], Mode=OneTime}"/>
 
-                    <Slider x:Name="SldrThumbnailSize"
-                            Width="256"
-                            Margin="8,0,0,0"
-                            Maximum="256"
-                            Minimum="64"
-                            Orientation="Horizontal"
-                            Value="128"/>
+                <Slider x:Name="SldrThumbnailSize"
+                        Width="256"
+                        Margin="8,0,0,0"
+                        Maximum="256"
+                        Minimum="64"
+                        Orientation="Horizontal"
+                        Value="128"/>
 
-                    <TextBlock Margin="8,0,0,0"
-                               Style="{StaticResource MaterialDesignBody2TextBlock}"
-                               Text="{Binding SelectedImage.Name}"/>
-                </StackPanel>
+                <TextBlock Margin="8,0,0,0"
+                           Style="{StaticResource MaterialDesignBody2TextBlock}"
+                           Text="{Binding SelectedImage.Name}"/>
+            </StackPanel>
 
-                <!-- Image modification -->
-                <StackPanel Grid.Column="2"
-                            Orientation="Horizontal">
-                    <Button Margin="4,8,4,8"
-                            Command="{Binding ExportImageCommand}">
-                        <Button.Content>
-                            <StackPanel Orientation="Horizontal">
-                                <md:PackIcon Kind="Export"/>
-                                <TextBlock Margin="4,0,0,0"
-                                           Text="{Binding [Command_ExportMedia], Mode=OneTime}"/>
-                            </StackPanel>
-                        </Button.Content>
-                    </Button>
-
-                    <Button Margin="4,8,4,8"
-                            Command="{Binding RemoveImageCommand}">
-                        <Button.Content>
-                            <StackPanel Orientation="Horizontal">
-                                <md:PackIcon Kind="Delete"/>
-                                <TextBlock Margin="4,0,0,0"
-                                           Text="{Binding [Command_DeleteMedia], Mode=OneTime}"/>
-                            </StackPanel>
-                        </Button.Content>
-                    </Button>
-
-                    <Button Margin="4,8,8,8"
-                            Command="{Binding ImportImagesCommand}"
-                            IsEnabled="{Binding IsImportInProgress, Converter={StaticResource BoolInverterConverter}}">
-                        <Button.Content>
-                            <StackPanel Orientation="Horizontal">
-                                <md:PackIcon Kind="Import"/>
-                                <TextBlock Margin="4,0,0,0"
-                                           Text="{Binding [Command_ImportMedia], Mode=OneTime}"/>
-                            </StackPanel>
-                        </Button.Content>
-                    </Button>
-                </StackPanel>
-            </Grid>
-
-            <!-- Progress bar / divider -->
-            <Border Grid.Row="1"
-                    Margin="32,0,32,0"
-                    BorderBrush="#DDDDDD"
-                    BorderThickness="0,0,0,3"/>
-            <ProgressBar Grid.Row="1"
-                         Margin="32,0,32,0"
-                         IsIndeterminate="True"
-                         Visibility="{Binding IsImportInProgress, Converter={StaticResource VisibilityConverter}}"/>
-
-            <!-- Image view -->
-            <ListView Grid.Row="2"
-                      Margin="0,8,0,0"
-                      ItemsSource="{Binding Images, Mode=OneWay}"
-                      SelectedIndex="{Binding SelectedImageIndex}"
-                      SelectedItem="{Binding SelectedImage}">
-                <ListView.ItemTemplate>
-                    <DataTemplate DataType="{x:Type dbModel:Media}">
-                        <StackPanel>
-                            <Image Source="{Binding ThumbPath, Converter={StaticResource PathToImageConverter}}">
-                                <i:Interaction.Triggers>
-                                    <i:EventTrigger EventName="MouseLeftButtonUp">
-                                        <i:InvokeCommandAction Command="{Binding DataContext.OpenDialogCommand, RelativeSource={RelativeSource AncestorType=ListView}}"/>
-                                    </i:EventTrigger>
-                                </i:Interaction.Triggers>
-                            </Image>
+            <!-- Image modification -->
+            <StackPanel Grid.Column="2"
+                        Orientation="Horizontal">
+                <Button Margin="4,8,4,8"
+                        Command="{Binding ExportImageCommand}">
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <md:PackIcon Kind="Export"/>
+                            <TextBlock Margin="4,0,0,0"
+                                       Text="{Binding [Command_ExportMedia], Mode=OneTime}"/>
                         </StackPanel>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
+                    </Button.Content>
+                </Button>
 
-                <ListView.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ListView}}"
-                                   ItemHeight="{Binding ElementName=SldrThumbnailSize, Path=Value}"
-                                   ItemWidth="{Binding ElementName=SldrThumbnailSize, Path=Value}"/>
-                    </ItemsPanelTemplate>
-                </ListView.ItemsPanel>
-            </ListView>
+                <Button Margin="4,8,4,8"
+                        Command="{Binding RemoveImageCommand}">
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <md:PackIcon Kind="Delete"/>
+                            <TextBlock Margin="4,0,0,0"
+                                       Text="{Binding [Command_DeleteMedia], Mode=OneTime}"/>
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
+
+                <Button Margin="4,8,8,8"
+                        Command="{Binding ImportImagesCommand}"
+                        IsEnabled="{Binding IsImportInProgress, Converter={StaticResource BoolInverterConverter}}">
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <md:PackIcon Kind="Import"/>
+                            <TextBlock Margin="4,0,0,0"
+                                       Text="{Binding [Command_ImportMedia], Mode=OneTime}"/>
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
+            </StackPanel>
         </Grid>
-    </md:DialogHost>
+
+        <!-- Progress bar / divider -->
+        <Border Grid.Row="1"
+                Margin="32,0,32,0"
+                BorderBrush="#DDDDDD"
+                BorderThickness="0,0,0,3"/>
+        <ProgressBar Grid.Row="1"
+                     Margin="32,0,32,0"
+                     IsIndeterminate="True"
+                     Visibility="{Binding IsImportInProgress, Converter={StaticResource VisibilityConverter}}"/>
+
+        <!-- Image view -->
+        <ListView Grid.Row="2"
+                  Margin="0,8,0,0"
+                  ItemsSource="{Binding Images, Mode=OneWay}"
+                  SelectedIndex="{Binding SelectedImageIndex}"
+                  SelectedItem="{Binding SelectedImage}">
+            <ListView.ItemTemplate>
+                <DataTemplate DataType="{x:Type dbModel:Media}">
+                    <Image Source="{Binding ThumbPath, Converter={StaticResource PathToImageConverter}}">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="MouseLeftButtonUp">
+                                <i:InvokeCommandAction Command="{Binding DataContext.OpenDialogCommand, RelativeSource={RelativeSource AncestorType=ListView}}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </Image>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ListView}}"
+                               ItemHeight="{Binding ElementName=SldrThumbnailSize, Path=Value}"
+                               ItemWidth="{Binding ElementName=SldrThumbnailSize, Path=Value}"/>
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
+        </ListView>
+    </Grid>
 </views:MvxWpfView>

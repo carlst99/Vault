@@ -32,6 +32,7 @@ namespace Vault.Core.ViewModels
         public IMvxCommand ExportImageCommand => new MvxCommand(ExportImage);
         public IMvxCommand RemoveImageCommand => new MvxCommand(RemoveImage);
         public IMvxCommand OpenDialogCommand => new MvxCommand(() => IsDialogOpen = true);
+        public IMvxCommand CloseDialogCommand => new MvxCommand(() => IsDialogOpen = false);
         public IMvxCommand CycleImageLeftCommand => new MvxCommand(() => OnCycleImage(true));
         public IMvxCommand CycleImageRightCommand => new MvxCommand(() => OnCycleImage(false));
 

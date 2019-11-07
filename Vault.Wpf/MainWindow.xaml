@@ -16,6 +16,7 @@
                  TextOptions.TextFormattingMode="Ideal"
                  TextOptions.TextRenderingMode="Auto"
                  WindowStartupLocation="CenterScreen"
+                 WindowState="Maximized"
                  mc:Ignorable="d">
     <Grid/>
 </views:MvxWindow>
