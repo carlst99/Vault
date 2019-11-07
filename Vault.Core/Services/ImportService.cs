@@ -16,8 +16,13 @@ namespace Vault.Core.Services
     public class ImportService : IImportService
     {
         public const double MAX_THUMB_SIZE = 256d;
+#if DEBUG
+        public static readonly string IMAGE_FOLDER_PATH = App.GetAppdataFilePath("0D");
+        public static readonly string VIDEO_FOLDER_PATH = App.GetAppdataFilePath("1D");
+#else
         public static readonly string IMAGE_FOLDER_PATH = App.GetAppdataFilePath("0");
         public static readonly string VIDEO_FOLDER_PATH = App.GetAppdataFilePath("1");
+#endif
 
         private readonly IMvxMessenger _messenger;
 
@@ -174,7 +179,7 @@ namespace Vault.Core.Services
             _messenger.Publish(new DialogMessage(this, "Import Error", errorMessage, DialogMessage.DialogMessageType.Error));
         }
 
-        #region Filesystem Helpers
+#region Filesystem Helpers
 
         /// <summary>
         /// Checks that a directory exists, and if not creates the directory
@@ -218,6 +223,6 @@ namespace Vault.Core.Services
             return Path.Combine(mediaDirectory, id.ToString() + ".vaultt");
         }
 
-        #endregion
+#endregion
     }
 }

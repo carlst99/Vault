@@ -3,10 +3,12 @@
                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                   xmlns:dbModel="clr-namespace:Vault.Core.Model.DbContext;assembly=Vault.Core"
+                  xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
                   xmlns:local="clr-namespace:Vault.Wpf.Views"
                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                   xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
                   xmlns:views="clr-namespace:MvvmCross.Platforms.Wpf.Views;assembly=MvvmCross.Platforms.Wpf"
+                  x:Name="PageRoot"
                   d:DesignHeight="450"
                   d:DesignWidth="800"
                   mc:Ignorable="d">
@@ -17,111 +19,213 @@
         <local:NativeBoolInverterValueConverter x:Key="BoolInverterConverter"/>
     </views:MvxWpfView.Resources>
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+    <md:DialogHost x:Name="DlgHst"
+                   CloseOnClickAway="True"
+                   IsOpen="{Binding IsDialogOpen}">
+
+        <md:DialogHost.DialogContent>
+            <Grid MinWidth="800"
+                  MinHeight="500"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Center"
+                  Focusable="False">
+                <Image Margin="4"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Source="{Binding SelectedImage.FilePath, Converter={StaticResource PathToImageConverter}}"
+                       Stretch="Uniform"/>
+
+                <Grid x:Name="GrdImageCycleLeft"
+                      HorizontalAlignment="Left"
+                      VerticalAlignment="Stretch"
+                      Background="#66FFFFFF"
+                      Opacity="0">
+                    <Button Margin="8"
+                            VerticalAlignment="Center"
+                            Command="{Binding CycleImageLeftCommand}"
+                            Content="{md:PackIcon Kind=ArrowLeftCircle}"
+                            Focusable="False"
+                            Style="{StaticResource MaterialDesignIconButton}"/>
+
+                    <Grid.Triggers>
+                        <EventTrigger RoutedEvent="MouseEnter">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.Target="{Binding ElementName=GrdImageCycleLeft}"
+                                                     Storyboard.TargetProperty="Opacity"
+                                                     From="0"
+                                                     To="1"
+                                                     Duration="0:0:0.2"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger RoutedEvent="MouseLeave">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.Target="{Binding ElementName=GrdImageCycleLeft}"
+                                                     Storyboard.TargetProperty="Opacity"
+                                                     From="1"
+                                                     To="0"
+                                                     Duration="0:0:0.2"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </Grid.Triggers>
+                </Grid>
+
+                <Grid x:Name="GrdImageCycleRight"
+                      HorizontalAlignment="Right"
+                      VerticalAlignment="Stretch"
+                      Background="#66FFFFFF"
+                      Opacity="0">
+                    <Button Margin="8"
+                            VerticalAlignment="Center"
+                            Command="{Binding CycleImageRightCommand}"
+                            Content="{md:PackIcon Kind=ArrowRightCircle}"
+                            Focusable="False"
+                            Style="{StaticResource MaterialDesignIconButton}"/>
+
+                    <Grid.Triggers>
+                        <EventTrigger RoutedEvent="MouseEnter">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.Target="{Binding ElementName=GrdImageCycleRight}"
+                                                     Storyboard.TargetProperty="Opacity"
+                                                     From="0"
+                                                     To="1"
+                                                     Duration="0:0:0.2"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger RoutedEvent="MouseLeave">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.Target="{Binding ElementName=GrdImageCycleRight}"
+                                                     Storyboard.TargetProperty="Opacity"
+                                                     From="1"
+                                                     To="0"
+                                                     Duration="0:0:0.2"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </Grid.Triggers>
+                </Grid>
+            </Grid>
+        </md:DialogHost.DialogContent>
 
         <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-            <!-- Detail / view control -->
-            <StackPanel Margin="8"
-                        VerticalAlignment="Center"
-                        Orientation="Horizontal">
-                <TextBlock Margin="0,0,4,0"
-                           Style="{StaticResource MaterialDesignBody2TextBlock}"
-                           Text="{Binding ImageCount}"/>
-                <TextBlock Style="{StaticResource MaterialDesignBody2TextBlock}"
-                           Text="{Binding [Label_Images], Mode=OneTime}"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
 
-                <Slider x:Name="SldrThumbnailSize"
-                        Width="256"
-                        Margin="8,0,0,0"
-                        Maximum="256"
-                        Minimum="64"
-                        Orientation="Horizontal"
-                        Value="128"/>
+                <!-- Detail / view control -->
+                <StackPanel Margin="8"
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal">
+                    <TextBlock Margin="0,0,4,0"
+                               Style="{StaticResource MaterialDesignBody2TextBlock}"
+                               Text="{Binding ImageCount}"/>
+                    <TextBlock Style="{StaticResource MaterialDesignBody2TextBlock}"
+                               Text="{Binding [Label_Images], Mode=OneTime}"/>
 
-                <TextBlock Margin="8,0,0,0"
-                           Style="{StaticResource MaterialDesignBody2TextBlock}"
-                           Text="{Binding SelectedImage.Name}"/>
-            </StackPanel>
+                    <Slider x:Name="SldrThumbnailSize"
+                            Width="256"
+                            Margin="8,0,0,0"
+                            Maximum="256"
+                            Minimum="64"
+                            Orientation="Horizontal"
+                            Value="128"/>
 
-            <!-- Image modification -->
-            <StackPanel Grid.Column="2"
-                        Orientation="Horizontal">
-                <Button Margin="4,8,4,8"
-                        Command="{Binding ExportImageCommand}">
-                    <Button.Content>
-                        <StackPanel Orientation="Horizontal">
-                            <md:PackIcon Kind="Export"/>
-                            <TextBlock Margin="4,0,0,0"
-                                       Text="{Binding [Command_ExportMedia], Mode=OneTime}"/>
+                    <TextBlock Margin="8,0,0,0"
+                               Style="{StaticResource MaterialDesignBody2TextBlock}"
+                               Text="{Binding SelectedImage.Name}"/>
+                </StackPanel>
+
+                <!-- Image modification -->
+                <StackPanel Grid.Column="2"
+                            Orientation="Horizontal">
+                    <Button Margin="4,8,4,8"
+                            Command="{Binding ExportImageCommand}">
+                        <Button.Content>
+                            <StackPanel Orientation="Horizontal">
+                                <md:PackIcon Kind="Export"/>
+                                <TextBlock Margin="4,0,0,0"
+                                           Text="{Binding [Command_ExportMedia], Mode=OneTime}"/>
+                            </StackPanel>
+                        </Button.Content>
+                    </Button>
+
+                    <Button Margin="4,8,4,8"
+                            Command="{Binding RemoveImageCommand}">
+                        <Button.Content>
+                            <StackPanel Orientation="Horizontal">
+                                <md:PackIcon Kind="Delete"/>
+                                <TextBlock Margin="4,0,0,0"
+                                           Text="{Binding [Command_DeleteMedia], Mode=OneTime}"/>
+                            </StackPanel>
+                        </Button.Content>
+                    </Button>
+
+                    <Button Margin="4,8,8,8"
+                            Command="{Binding ImportImagesCommand}"
+                            IsEnabled="{Binding IsImportInProgress, Converter={StaticResource BoolInverterConverter}}">
+                        <Button.Content>
+                            <StackPanel Orientation="Horizontal">
+                                <md:PackIcon Kind="Import"/>
+                                <TextBlock Margin="4,0,0,0"
+                                           Text="{Binding [Command_ImportMedia], Mode=OneTime}"/>
+                            </StackPanel>
+                        </Button.Content>
+                    </Button>
+                </StackPanel>
+            </Grid>
+
+            <!-- Progress bar / divider -->
+            <Border Grid.Row="1"
+                    Margin="32,0,32,0"
+                    BorderBrush="#DDDDDD"
+                    BorderThickness="0,0,0,3"/>
+            <ProgressBar Grid.Row="1"
+                         Margin="32,0,32,0"
+                         IsIndeterminate="True"
+                         Visibility="{Binding IsImportInProgress, Converter={StaticResource VisibilityConverter}}"/>
+
+            <!-- Image view -->
+            <ListView Grid.Row="2"
+                      Margin="0,8,0,0"
+                      ItemsSource="{Binding Images, Mode=OneWay}"
+                      SelectedIndex="{Binding SelectedImageIndex}"
+                      SelectedItem="{Binding SelectedImage}">
+                <ListView.ItemTemplate>
+                    <DataTemplate DataType="{x:Type dbModel:Media}">
+                        <StackPanel>
+                            <Image Source="{Binding ThumbPath, Converter={StaticResource PathToImageConverter}}">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="MouseLeftButtonUp">
+                                        <i:InvokeCommandAction Command="{Binding DataContext.OpenDialogCommand, RelativeSource={RelativeSource AncestorType=ListView}}"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </Image>
                         </StackPanel>
-                    </Button.Content>
-                </Button>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
 
-                <Button Margin="4,8,4,8"
-                        Command="{Binding RemoveImageCommand}">
-                    <Button.Content>
-                        <StackPanel Orientation="Horizontal">
-                            <md:PackIcon Kind="Delete"/>
-                            <TextBlock Margin="4,0,0,0"
-                                       Text="{Binding [Command_DeleteMedia], Mode=OneTime}"/>
-                        </StackPanel>
-                    </Button.Content>
-                </Button>
-
-                <Button Margin="4,8,8,8"
-                        Command="{Binding ImportImagesCommand}"
-                        IsEnabled="{Binding IsImportInProgress, Converter={StaticResource BoolInverterConverter}}">
-                    <Button.Content>
-                        <StackPanel Orientation="Horizontal">
-                            <md:PackIcon Kind="Import"/>
-                            <TextBlock Margin="4,0,0,0"
-                                       Text="{Binding [Command_ImportMedia], Mode=OneTime}"/>
-                        </StackPanel>
-                    </Button.Content>
-                </Button>
-            </StackPanel>
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ListView}}"
+                                   ItemHeight="{Binding ElementName=SldrThumbnailSize, Path=Value}"
+                                   ItemWidth="{Binding ElementName=SldrThumbnailSize, Path=Value}"/>
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+            </ListView>
         </Grid>
-
-        <!-- Progress bar / divider -->
-        <Border Grid.Row="1"
-                Margin="32,0,32,0"
-                BorderBrush="#DDDDDD"
-                BorderThickness="0,0,0,3"/>
-        <ProgressBar Grid.Row="1"
-                     Margin="32,0,32,0"
-                     IsIndeterminate="True"
-                     Visibility="{Binding IsImportInProgress, Converter={StaticResource VisibilityConverter}}"/>
-
-        <!-- Image view -->
-        <ListView Grid.Row="2"
-                  Margin="0,8,0,0"
-                  ItemsSource="{Binding Images, Mode=OneWay}"
-                  SelectedItem="{Binding SelectedImage}">
-            <ListView.ItemTemplate>
-                <DataTemplate DataType="{x:Type dbModel:Media}">
-                    <StackPanel>
-                        <Image Source="{Binding ThumbPath, Converter={StaticResource PathToImageConverter}}"/>
-                    </StackPanel>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-
-            <ListView.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <WrapPanel Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ListView}}"
-                               ItemHeight="{Binding ElementName=SldrThumbnailSize, Path=Value}"
-                               ItemWidth="{Binding ElementName=SldrThumbnailSize, Path=Value}"/>
-                </ItemsPanelTemplate>
-            </ListView.ItemsPanel>
-        </ListView>
-    </Grid>
+    </md:DialogHost>
 </views:MvxWpfView>
