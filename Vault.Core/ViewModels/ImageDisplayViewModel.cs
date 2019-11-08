@@ -21,8 +21,6 @@ namespace Vault.Core.ViewModels
         private bool _isImportInProgress;
         private List<Media> _images;
         private Media _selectedImage;
-        private bool _isDialogOpen;
-        private int _selectedImageIndex;
 
         #endregion
 
@@ -31,10 +29,7 @@ namespace Vault.Core.ViewModels
         public IMvxCommand ImportImagesCommand => new MvxCommand(ImportImages);
         public IMvxCommand ExportImageCommand => new MvxCommand(ExportImage);
         public IMvxCommand RemoveImageCommand => new MvxCommand(RemoveImage);
-        public IMvxCommand OpenDialogCommand => new MvxCommand(() => IsDialogOpen = true);
-        public IMvxCommand CloseDialogCommand => new MvxCommand(() => IsDialogOpen = false);
-        public IMvxCommand CycleImageLeftCommand => new MvxCommand(() => OnCycleImage(true));
-        public IMvxCommand CycleImageRightCommand => new MvxCommand(() => OnCycleImage(false));
+        public IMvxCommand OpenDialogCommand => new MvxCommand(() => NavigationService.Navigate<ImageFullScreenViewModel>());
 
         #endregion
 
@@ -70,24 +65,6 @@ namespace Vault.Core.ViewModels
         {
             get => _selectedImage;
             set => SetProperty(ref _selectedImage, value);
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether or not the image display dialog is open
-        /// </summary>
-        public bool IsDialogOpen
-        {
-            get => _isDialogOpen;
-            set => SetProperty(ref _isDialogOpen, value);
-        }
-
-        /// <summary>
-        /// Gets or sets the index of the image list
-        /// </summary>
-        public int SelectedImageIndex
-        {
-            get => _selectedImageIndex;
-            set => SetProperty(ref _selectedImageIndex, value);
         }
 
         #endregion
@@ -144,22 +121,6 @@ namespace Vault.Core.ViewModels
             await _importService.TryRemoveMediaAsync(toRemove).ConfigureAwait(true);
             UpdateImageList();
             await RaisePropertyChanged(nameof(ImageCount)).ConfigureAwait(true);
-        }
-
-        private void OnCycleImage(bool cycleLeft)
-        {
-            int index = SelectedImageIndex;
-            if (cycleLeft)
-            {
-                SelectedImageIndex--;
-                if (SelectedImageIndex == -1)
-                    SelectedImageIndex = ImageCount - 1;
-            } else
-            {
-                SelectedImageIndex++;
-                if (SelectedImageIndex == ImageCount)
-                    SelectedImageIndex = 0;
-            }
         }
 
         private void UpdateImageList()

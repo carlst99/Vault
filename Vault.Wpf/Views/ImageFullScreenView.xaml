@@ -1,0 +1,132 @@
+﻿<views:MvxWindow x:Class="Vault.Wpf.Views.ImageFullScreenView"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                 xmlns:local="clr-namespace:Vault.Wpf.Views"
+                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                 xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+                 xmlns:views="clr-namespace:MvvmCross.Platforms.Wpf.Views;assembly=MvvmCross.Platforms.Wpf"
+                 d:DesignHeight="450"
+                 d:DesignWidth="800"
+                 Background="{StaticResource MaterialDesignBackground}"
+                 KeyDown="MvxWindow_KeyDown"
+                 RenderOptions.BitmapScalingMode="HighQuality"
+                 UseLayoutRounding="True"
+                 WindowStartupLocation="CenterScreen"
+                 WindowState="Maximized"
+                 WindowStyle="None"
+                 mc:Ignorable="d">
+
+    <Window.Resources>
+        <local:NativePathToImageValueConverter x:Key="PathToImageConverter"/>
+    </Window.Resources>
+
+    <Grid x:Name="GrdImageContainer">
+        <Image MaxWidth="{Binding ElementName=GrdImageContainer, Path=ActualWidth}"
+               MaxHeight="{Binding ElementName=GrdImageContainer, Path=ActualHeight}"
+               Margin="4"
+               Source="{Binding SelectedImage.FilePath, Converter={StaticResource PathToImageConverter}}"
+               Stretch="None"/>
+
+        <Grid x:Name="GrdImageCycleLeft"
+              HorizontalAlignment="Left"
+              VerticalAlignment="Stretch"
+              Background="#66FFFFFF">
+            <Button Margin="8"
+                    VerticalAlignment="Center"
+                    Command="{Binding CycleImageLeftCommand}"
+                    Content="{md:PackIcon Kind=ArrowLeftCircle}"
+                    Focusable="False"
+                    Style="{StaticResource MaterialDesignIconButton}"/>
+
+            <Grid.Triggers>
+                <EventTrigger RoutedEvent="MouseEnter">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.Target="{Binding ElementName=GrdImageCycleLeft}"
+                                             Storyboard.TargetProperty="Opacity"
+                                             From="0"
+                                             To="1"
+                                             Duration="0:0:0.2"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+                <EventTrigger RoutedEvent="MouseLeave">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.Target="{Binding ElementName=GrdImageCycleLeft}"
+                                             Storyboard.TargetProperty="Opacity"
+                                             From="1"
+                                             To="0"
+                                             Duration="0:0:0.2"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Grid.Triggers>
+        </Grid>
+
+        <Grid x:Name="GrdImageCycleRight"
+              HorizontalAlignment="Right"
+              VerticalAlignment="Stretch"
+              Background="#66FFFFFF">
+            <Button Margin="8"
+                    VerticalAlignment="Center"
+                    Command="{Binding CycleImageRightCommand}"
+                    Content="{md:PackIcon Kind=ArrowRightCircle}"
+                    Focusable="False"
+                    Style="{StaticResource MaterialDesignIconButton}"/>
+            <Button Margin="8"
+                    VerticalAlignment="Top"
+                    Click="Button_Click"
+                    Content="{md:PackIcon Kind=CloseCircle}"
+                    Focusable="False"
+                    Style="{StaticResource MaterialDesignIconButton}"/>
+
+            <Grid.Triggers>
+                <EventTrigger RoutedEvent="MouseEnter">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.Target="{Binding ElementName=GrdImageCycleRight}"
+                                             Storyboard.TargetProperty="Opacity"
+                                             From="0"
+                                             To="1"
+                                             Duration="0:0:0.2"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+                <EventTrigger RoutedEvent="MouseLeave">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.Target="{Binding ElementName=GrdImageCycleRight}"
+                                             Storyboard.TargetProperty="Opacity"
+                                             From="1"
+                                             To="0"
+                                             Duration="0:0:0.2"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Grid.Triggers>
+        </Grid>
+
+        <Grid.Triggers>
+            <EventTrigger RoutedEvent="Loaded">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <DoubleAnimation BeginTime="0:0:0.5"
+                                         Storyboard.Target="{Binding ElementName=GrdImageCycleLeft}"
+                                         Storyboard.TargetProperty="Opacity"
+                                         From="1"
+                                         To="0"
+                                         Duration="0:0:1"/>
+                        <DoubleAnimation BeginTime="0:0:0.5"
+                                         Storyboard.Target="{Binding ElementName=GrdImageCycleRight}"
+                                         Storyboard.TargetProperty="Opacity"
+                                         From="1"
+                                         To="0"
+                                         Duration="0:0:1"/>
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+        </Grid.Triggers>
+    </Grid>
+</views:MvxWindow>

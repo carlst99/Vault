@@ -11,7 +11,6 @@
                   x:Name="PageRoot"
                   d:DesignHeight="450"
                   d:DesignWidth="800"
-                  KeyDown="Page_KeyDown"
                   RenderOptions.BitmapScalingMode="HighQuality"
                   UseLayoutRounding="True"
                   mc:Ignorable="d">
@@ -28,121 +27,6 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-
-        <!-- Image Popup -->
-        <Popup x:Name="PopImage"
-               AllowsTransparency="True"
-               Closed="PopImage_Closed"
-               IsOpen="{Binding IsDialogOpen}"
-               Opened="PopImage_Opened"
-               Placement="Center"
-               PopupAnimation="Fade"
-               StaysOpen="False">
-
-            <Grid x:Name="GrdImageContainer"
-                  Background="{StaticResource MaterialDesignBackground}">
-                <Image Margin="4"
-                       Source="{Binding SelectedImage.FilePath, Converter={StaticResource PathToImageConverter}}"
-                       Stretch="None"/>
-
-                <Grid x:Name="GrdImageCycleLeft"
-                      HorizontalAlignment="Left"
-                      VerticalAlignment="Stretch"
-                      Background="#66FFFFFF">
-                    <Button Margin="8"
-                            VerticalAlignment="Center"
-                            Command="{Binding CycleImageLeftCommand}"
-                            Content="{md:PackIcon Kind=ArrowLeftCircle}"
-                            Focusable="False"
-                            Style="{StaticResource MaterialDesignIconButton}"/>
-
-                    <Grid.Triggers>
-                        <EventTrigger RoutedEvent="MouseEnter">
-                            <BeginStoryboard>
-                                <Storyboard>
-                                    <DoubleAnimation Storyboard.Target="{Binding ElementName=GrdImageCycleLeft}"
-                                                     Storyboard.TargetProperty="Opacity"
-                                                     From="0"
-                                                     To="1"
-                                                     Duration="0:0:0.2"/>
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
-                        <EventTrigger RoutedEvent="MouseLeave">
-                            <BeginStoryboard>
-                                <Storyboard>
-                                    <DoubleAnimation Storyboard.Target="{Binding ElementName=GrdImageCycleLeft}"
-                                                     Storyboard.TargetProperty="Opacity"
-                                                     From="1"
-                                                     To="0"
-                                                     Duration="0:0:0.2"/>
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
-                    </Grid.Triggers>
-                </Grid>
-
-                <Grid x:Name="GrdImageCycleRight"
-                      HorizontalAlignment="Right"
-                      VerticalAlignment="Stretch"
-                      Background="#66FFFFFF">
-                    <Button Margin="8"
-                            VerticalAlignment="Center"
-                            Command="{Binding CycleImageRightCommand}"
-                            Content="{md:PackIcon Kind=ArrowRightCircle}"
-                            Focusable="False"
-                            Style="{StaticResource MaterialDesignIconButton}"/>
-                    <Button Margin="8"
-                            VerticalAlignment="Top"
-                            Command="{Binding CloseDialogCommand}"
-                            Content="{md:PackIcon Kind=CloseCircle}"
-                            Focusable="False"
-                            Style="{StaticResource MaterialDesignIconButton}"/>
-
-                    <Grid.Triggers>
-                        <EventTrigger RoutedEvent="MouseEnter">
-                            <BeginStoryboard>
-                                <Storyboard>
-                                    <DoubleAnimation Storyboard.Target="{Binding ElementName=GrdImageCycleRight}"
-                                                     Storyboard.TargetProperty="Opacity"
-                                                     From="0"
-                                                     To="1"
-                                                     Duration="0:0:0.2"/>
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
-                        <EventTrigger RoutedEvent="MouseLeave">
-                            <BeginStoryboard>
-                                <Storyboard>
-                                    <DoubleAnimation Storyboard.Target="{Binding ElementName=GrdImageCycleRight}"
-                                                     Storyboard.TargetProperty="Opacity"
-                                                     From="1"
-                                                     To="0"
-                                                     Duration="0:0:0.2"/>
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
-                    </Grid.Triggers>
-                </Grid>
-            </Grid>
-
-            <Popup.Resources>
-                <Storyboard x:Key="PopupOpenedStoryboard">
-                    <DoubleAnimation BeginTime="0:0:0.5"
-                                     Storyboard.Target="{Binding ElementName=GrdImageCycleLeft}"
-                                     Storyboard.TargetProperty="Opacity"
-                                     From="1"
-                                     To="0"
-                                     Duration="0:0:1"/>
-                    <DoubleAnimation BeginTime="0:0:0.5"
-                                     Storyboard.Target="{Binding ElementName=GrdImageCycleRight}"
-                                     Storyboard.TargetProperty="Opacity"
-                                     From="1"
-                                     To="0"
-                                     Duration="0:0:1"/>
-                </Storyboard>
-            </Popup.Resources>
-        </Popup>
 
         <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
@@ -226,7 +110,6 @@
         <ListView Grid.Row="2"
                   Margin="0,8,0,0"
                   ItemsSource="{Binding Images, Mode=OneWay}"
-                  SelectedIndex="{Binding SelectedImageIndex}"
                   SelectedItem="{Binding SelectedImage}">
             <ListView.ItemTemplate>
                 <DataTemplate DataType="{x:Type dbModel:Media}">
