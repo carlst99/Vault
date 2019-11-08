@@ -7,7 +7,7 @@ using Vault.Core.Model.DbContext;
 
 namespace Vault.Core.ViewModels
 {
-    public class ImageFullScreenViewModel : Base.ViewModelBase
+    public class ImageFullScreenViewModel : Base.ViewModelBase<Media>
     {
         #region Fields
 
@@ -61,6 +61,12 @@ namespace Vault.Core.ViewModels
             }
 
             SelectedImage = _images[_selectedImageIndex];
+        }
+
+        public override void Prepare(Media parameter)
+        {
+            _selectedImage = parameter;
+            _selectedImageIndex = _images.IndexOf(parameter);
         }
     }
 }

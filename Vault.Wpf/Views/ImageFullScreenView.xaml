@@ -22,10 +22,7 @@
     </Window.Resources>
 
     <Grid x:Name="GrdImageContainer">
-        <Image MaxWidth="{Binding ElementName=GrdImageContainer, Path=ActualWidth}"
-               MaxHeight="{Binding ElementName=GrdImageContainer, Path=ActualHeight}"
-               Margin="4"
-               Source="{Binding SelectedImage.FilePath, Converter={StaticResource PathToImageConverter}}"
+        <Image Source="{Binding SelectedImage.FilePath, Converter={StaticResource PathToImageConverter}}"
                Stretch="None"/>
 
         <Grid x:Name="GrdImageCycleLeft"

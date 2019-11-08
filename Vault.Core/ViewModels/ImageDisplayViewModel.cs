@@ -29,7 +29,7 @@ namespace Vault.Core.ViewModels
         public IMvxCommand ImportImagesCommand => new MvxCommand(ImportImages);
         public IMvxCommand ExportImageCommand => new MvxCommand(ExportImage);
         public IMvxCommand RemoveImageCommand => new MvxCommand(RemoveImage);
-        public IMvxCommand OpenDialogCommand => new MvxCommand(() => NavigationService.Navigate<ImageFullScreenViewModel>());
+        public IMvxCommand OpenDialogCommand => new MvxCommand(() => NavigationService.Navigate<ImageFullScreenViewModel, Media>(SelectedImage));
 
         #endregion
 
