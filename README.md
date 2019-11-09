@@ -18,6 +18,9 @@ Also, at this stage you can't change your password once you've first set it; I'm
 
 Any issues/pull requests are welcome. Please respect my code styling.
 
+### Building
+Vault uses nothing special. You'll need .NET Core 2.2 and .NET Framework 4.7.2. I've setup Vault so that you can run both a live version and development version at the same time. Builds done using the `Release` config set their appdata path to the system appdata. Builds done using the `Debug_Passwords` config set their appdata path to the output directory, but otherwise contain the entire app like the `Release` config. Builds done using the default `Debug` config also set their appdata path to the output directory, but skip any password-entry screens and instead use predetermined encryption keys, to save time when debugging.
+
 ### Libraries Used
 - MvvmCross
 - MaterialDesignInXamlToolkit
