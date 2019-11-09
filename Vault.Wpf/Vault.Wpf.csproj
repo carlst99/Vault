@@ -215,6 +215,9 @@
       <DependentUpon>ImageFullScreenView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\NativeConverters.cs" />
+    <Compile Include="Views\SetupView.xaml.cs">
+      <DependentUpon>SetupView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\VideoDisplayView.xaml.cs">
       <DependentUpon>VideoDisplayView.xaml</DependentUpon>
     </Compile>
@@ -243,6 +246,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\ImageFullScreenView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SetupView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

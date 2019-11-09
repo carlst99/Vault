@@ -5,6 +5,13 @@ namespace Vault.Core.Services
     public interface IPasswordService
     {
         Task<bool> TryVerifyPasswordAsync(string password);
-        Task<bool> TryChangePasswordAsync(string oldPassword, string newPassword);
+        Task<PasswordChangeResult> TryChangePasswordAsync(string oldPassword, string newPassword);
+    }
+
+    public enum PasswordChangeResult
+    {
+        OldPasswordIncorrect,
+        Success,
+        Failure
     }
 }

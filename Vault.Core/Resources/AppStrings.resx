@@ -129,9 +129,29 @@
     <value>Import</value>
     <comment>This label appears on a control allowing the user to import media items</comment>
   </data>
+  <data name="Command_SetPassword" xml:space="preserve">
+    <value>Set Password</value>
+    <comment>This label appears on a control which changes the users password</comment>
+  </data>
   <data name="Command_Unlock" xml:space="preserve">
     <value>Unlock</value>
     <comment>This label appears on a control which allows the user to unlock their vault</comment>
+  </data>
+  <data name="Hint_NewPassword" xml:space="preserve">
+    <value>New Password</value>
+    <comment>This hint tells the user to enter a new password</comment>
+  </data>
+  <data name="Hint_OldPassword" xml:space="preserve">
+    <value>Old Password</value>
+    <comment>This hint tells the user to enter their old password</comment>
+  </data>
+  <data name="Hint_Password" xml:space="preserve">
+    <value>Password</value>
+    <comment>This hint tells the user to enter their password</comment>
+  </data>
+  <data name="Hint_VerifyPassword" xml:space="preserve">
+    <value>Verify Password</value>
+    <comment>This hint tells the user to verify their password</comment>
   </data>
   <data name="Label_Images" xml:space="preserve">
     <value>Images</value>
