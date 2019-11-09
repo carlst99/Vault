@@ -10,6 +10,7 @@ using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 using MvvmCross.Plugin.Messenger;
+using System.Reflection;
 
 [assembly: InternalsVisibleTo("Vault.Core.Tests")]
 
@@ -99,6 +100,9 @@ namespace Vault.Core
         public static string GetPlatformAppdataPath()
         {
             string path;
+#if DEBUG
+            path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+#else
             if (CrossDeviceInfo.IsSupported)
             {
                 switch (CrossDeviceInfo.Current.Platform)
@@ -117,6 +121,7 @@ namespace Vault.Core
             {
                 path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             }
+#endif
 
             return Path.Combine(path, "Vault");
         }
@@ -128,6 +133,6 @@ namespace Vault.Core
         /// <returns></returns>
         public static string GetAppdataFilePath(string fileName) => Path.Combine(GetPlatformAppdataPath(), fileName);
 
-        #endregion
+#endregion
     }
 }
