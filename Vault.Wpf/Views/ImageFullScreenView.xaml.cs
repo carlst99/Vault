@@ -1,9 +1,9 @@
-﻿using MvvmCross.Platforms.Wpf.Presenters.Attributes;
-using MvvmCross.Platforms.Wpf.Views;
+﻿using MvvmCross.Platforms.Wpf.Views;
+using Vault.Wpf.UI;
 
 namespace Vault.Wpf.Views
 {
-    [MvxWindowPresentation(Identifier = nameof(ImageFullScreenView), Modal = true)]
+    [ModalPresentation(OwnerWindowType = typeof(MainWindow))]
     public partial class ImageFullScreenView : MvxWindow
     {
         public ImageFullScreenView()

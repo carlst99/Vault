@@ -199,6 +199,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Setup.cs" />
+    <Compile Include="UI\ModalPresentationAttribute.cs" />
+    <Compile Include="UI\ModelPresenter.cs" />
     <Compile Include="UI\PasswordBoxAssistant.cs" />
     <Compile Include="Views\HomeView.xaml.cs">
       <DependentUpon>HomeView.xaml</DependentUpon>

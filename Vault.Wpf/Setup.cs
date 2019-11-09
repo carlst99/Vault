@@ -1,7 +1,7 @@
 ﻿using MvvmCross.Platforms.Wpf.Core;
 using MvvmCross.Platforms.Wpf.Presenters;
-using MvvmCrossExtensions.Wpf.Presenters.MasterDetail;
 using System.Windows.Controls;
+using Vault.Wpf.UI;
 
 namespace Vault.Wpf
 {
@@ -9,7 +9,7 @@ namespace Vault.Wpf
     {
         protected override IMvxWpfViewPresenter CreateViewPresenter(ContentControl root)
         {
-            return new MasterDetailPresenter(root);
+            return new ModalPresenter(root);
         }
     }
 }
