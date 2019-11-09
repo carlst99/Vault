@@ -3,6 +3,7 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using MvvmCross;
 using MvvmCross.Platforms.Wpf.Views;
 using MvvmCross.Plugin.Messenger;
+using Squirrel;
 using System;
 using System.Collections.Generic;
 using System.Windows;
@@ -25,10 +26,13 @@ namespace Vault.Wpf
             InitializeComponent();
         }
 
-        private void MvxWindow_Loaded(object sender, RoutedEventArgs e)
+        private async void MvxWindow_Loaded(object sender, RoutedEventArgs e)
         {
             _dialogSubToken = Mvx.IoCProvider.Resolve<IMvxMessenger>().SubscribeOnMainThread<DialogMessage>(OnDialogMessage);
             _fileSubToken = Mvx.IoCProvider.Resolve<IMvxMessenger>().SubscribeOnMainThread<FileMessage>(OnFileMessage);
+
+            using (UpdateManager mgr = new UpdateManager("C:\\Users\\carls\\source\\repos\\Vault\\Releases"))
+                await mgr.UpdateApp().ConfigureAwait(false);
         }
 
         private void OnDialogMessage(DialogMessage message)
