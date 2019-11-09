@@ -121,7 +121,7 @@ namespace Vault.Core
                         path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
                         break;
                     default:
-                        path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                        path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
                         break;
                 }
             } else
