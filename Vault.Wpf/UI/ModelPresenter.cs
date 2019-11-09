@@ -13,21 +13,20 @@ namespace Vault.Wpf.UI
 {
     public class ModalPresenter : MasterDetailPresenter
     {
-        public ModalWpfViewPresenter(ContentControl root)
+        public ModalPresenter(ContentControl root)
             : base(root)
         {
-
         }
 
         public override void RegisterAttributeTypes()
         {
             AttributeTypesToActionsDictionary.Register<ModalPresentationAttribute>(
-                    (viewType, attribute, request) =>
+                    (_, attribute, request) =>
                     {
                         var view = WpfViewLoader.CreateView(request);
                         return ShowModalWindow(view, attribute, request);
                     },
-                    (viewModel, attribute) => CloseWindow(viewModel));
+                    (viewModel, _) => CloseWindow(viewModel));
 
             base.RegisterAttributeTypes();
         }
