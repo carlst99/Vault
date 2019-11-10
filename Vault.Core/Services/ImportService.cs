@@ -2,6 +2,7 @@
 using Realms;
 using Serilog;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Processing;
 using StreamEncryptor.Predefined;
 using System;
@@ -64,16 +65,12 @@ namespace Vault.Core.Services
 
                     // Load, encrypt and save the file and thumbnail
                     using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
-                    using (FileStream output = new FileStream(media.FilePath, FileMode.CreateNew, FileAccess.ReadWrite))
-                    using (Image image = Image.Load(fs))
-                    using (MemoryStream thumbStore = new MemoryStream())
+                    using (FileStream imageOutput = new FileStream(media.FilePath, FileMode.CreateNew, FileAccess.ReadWrite))
                     using (FileStream thumbOutput = new FileStream(media.ThumbPath, FileMode.CreateNew, FileAccess.ReadWrite))
+                    using (Image image = Image.Load(fs))
+                    using (MemoryStream imageStore = new MemoryStream())
+                    using (MemoryStream thumbStore = new MemoryStream())
                     {
-                        // Reset the position after loading the image
-                        fs.Position = 0;
-                        // Encrypt the original image
-                        encryptor.EncryptAsync(fs, output).Wait();
-
                         // Find the thumbnail scalar
                         double scalar;
                         if (image.Width < image.Height)
@@ -81,9 +78,15 @@ namespace Vault.Core.Services
                         else
                             scalar = MAX_THUMB_SIZE / image.Width;
 
-                        // Mutate and encrypt the image
+                        // Save the image as a PNG
+                        PngEncoder pngEncoder = new PngEncoder();
+                        image.Save(imageStore, pngEncoder);
+                        imageStore.Position = 0;
+                        encryptor.EncryptAsync(imageStore, imageOutput);
+
+                        // Mutate and encrypt the thumbnail
                         image.Mutate(x => x.Resize((int)(image.Width * scalar), (int)(image.Height * scalar)));
-                        image.Save(thumbStore, new SixLabors.ImageSharp.Formats.Png.PngEncoder());
+                        image.Save(thumbStore, pngEncoder);
                         thumbStore.Position = 0;
                         encryptor.EncryptAsync(thumbStore, thumbOutput).Wait();
                     }
