@@ -7,6 +7,7 @@
                   xmlns:local="clr-namespace:Vault.Wpf.Views"
                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                   xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+                  xmlns:ui="clr-namespace:Vault.Wpf.UI"
                   xmlns:views="clr-namespace:MvvmCross.Platforms.Wpf.Views;assembly=MvvmCross.Platforms.Wpf"
                   x:Name="PageRoot"
                   d:DesignHeight="450"
@@ -48,7 +49,7 @@
                         Width="256"
                         Margin="8,0,0,0"
                         Maximum="256"
-                        Minimum="64"
+                        Minimum="96"
                         Orientation="Horizontal"
                         Value="128"/>
 
@@ -113,20 +114,20 @@
                   SelectedItem="{Binding SelectedImage}">
             <ListView.ItemTemplate>
                 <DataTemplate DataType="{x:Type dbModel:Media}">
-                    <Grid>
-                        <Image Source="{Binding ThumbPath, Converter={StaticResource PathToImageConverter}}">
-                            <i:Interaction.Triggers>
-                                <i:EventTrigger EventName="MouseRightButtonUp">
-                                    <i:InvokeCommandAction Command="{Binding DataContext.OpenDialogCommand, RelativeSource={RelativeSource AncestorType=ListView}}"/>
-                                </i:EventTrigger>
-                            </i:Interaction.Triggers>
-                        </Image>
+                    <Grid Background="Transparent">
+                        <Image Margin="6"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               Source="{Binding ThumbPath, Converter={StaticResource PathToImageConverter}}"/>
                         <Button x:Name="BtnExpandImage"
+                                Margin="6"
                                 HorizontalAlignment="Right"
                                 VerticalAlignment="Top"
                                 Command="{Binding DataContext.OpenDialogFromButtonCommand, RelativeSource={RelativeSource AncestorType=ListView}}"
                                 CommandParameter="{Binding}"
                                 Content="{md:PackIcon Kind=ArrowExpand}"
+                                Focusable="False"
+                                Opacity="0"
                                 Style="{StaticResource MaterialDesignFlatButton}"/>
 
                         <Grid.Triggers>
@@ -137,6 +138,10 @@
                                                         Storyboard.TargetProperty="(Background).(SolidColorBrush.Color)"
                                                         To="#DDFFFFFF"
                                                         Duration="0:0:0.2"/>
+                                        <DoubleAnimation Storyboard.Target="{Binding ElementName=BtnExpandImage}"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         To="1"
+                                                         Duration="0:0:0.2"/>
                                     </Storyboard>
                                 </BeginStoryboard>
                             </EventTrigger>
@@ -147,10 +152,20 @@
                                                         Storyboard.TargetProperty="(Background).(SolidColorBrush.Color)"
                                                         To="#00FFFFFF"
                                                         Duration="0:0:0.2"/>
+                                        <DoubleAnimation Storyboard.Target="{Binding ElementName=BtnExpandImage}"
+                                                         Storyboard.TargetProperty="Opacity"
+                                                         To="0"
+                                                         Duration="0:0:0.2"/>
                                     </Storyboard>
                                 </BeginStoryboard>
                             </EventTrigger>
                         </Grid.Triggers>
+
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="MouseRightButtonUp">
+                                <i:InvokeCommandAction Command="{Binding DataContext.OpenDialogCommand, RelativeSource={RelativeSource AncestorType=ListView}}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
@@ -162,6 +177,15 @@
                                ItemWidth="{Binding ElementName=SldrThumbnailSize, Path=Value}"/>
                 </ItemsPanelTemplate>
             </ListView.ItemsPanel>
+
+            <ListView.ItemContainerStyle>
+                <Style BasedOn="{StaticResource MaterialDesignListBoxItem}"
+                       TargetType="{x:Type ListViewItem}">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                    <Setter Property="Padding" Value="0"/>
+                </Style>
+            </ListView.ItemContainerStyle>
         </ListView>
     </Grid>
 </views:MvxWpfView>
