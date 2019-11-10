@@ -113,13 +113,45 @@
                   SelectedItem="{Binding SelectedImage}">
             <ListView.ItemTemplate>
                 <DataTemplate DataType="{x:Type dbModel:Media}">
-                    <Image Source="{Binding ThumbPath, Converter={StaticResource PathToImageConverter}}">
-                        <i:Interaction.Triggers>
-                            <i:EventTrigger EventName="MouseLeftButtonUp">
-                                <i:InvokeCommandAction Command="{Binding DataContext.OpenDialogCommand, RelativeSource={RelativeSource AncestorType=ListView}}"/>
-                            </i:EventTrigger>
-                        </i:Interaction.Triggers>
-                    </Image>
+                    <Grid>
+                        <Image Source="{Binding ThumbPath, Converter={StaticResource PathToImageConverter}}">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="MouseRightButtonUp">
+                                    <i:InvokeCommandAction Command="{Binding DataContext.OpenDialogCommand, RelativeSource={RelativeSource AncestorType=ListView}}"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </Image>
+                        <Button x:Name="BtnExpandImage"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Top"
+                                Command="{Binding DataContext.OpenDialogFromButtonCommand, RelativeSource={RelativeSource AncestorType=ListView}}"
+                                CommandParameter="{Binding}"
+                                Content="{md:PackIcon Kind=ArrowExpand}"
+                                Style="{StaticResource MaterialDesignFlatButton}"/>
+
+                        <Grid.Triggers>
+                            <EventTrigger RoutedEvent="MouseEnter">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation Storyboard.Target="{Binding ElementName=BtnExpandImage}"
+                                                        Storyboard.TargetProperty="(Background).(SolidColorBrush.Color)"
+                                                        To="#DDFFFFFF"
+                                                        Duration="0:0:0.2"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            <EventTrigger RoutedEvent="MouseLeave">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation Storyboard.Target="{Binding ElementName=BtnExpandImage}"
+                                                        Storyboard.TargetProperty="(Background).(SolidColorBrush.Color)"
+                                                        To="#00FFFFFF"
+                                                        Duration="0:0:0.2"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Grid.Triggers>
+                    </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
 

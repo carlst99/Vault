@@ -52,7 +52,7 @@ namespace Vault.Core.Model.DbContext
         {
             await Task.Run(() =>
             {
-                using (StreamReader sr = new StreamReader(PasswordService.SALT_FILE_LOCATION))
+                using (StreamReader sr = new StreamReader(App.SALT_FILE_LOCATION))
                 {
                     string salt = sr.ReadLine();
                     byte[] saltBytes = Encoding.UTF8.GetBytes(salt);

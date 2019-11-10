@@ -19,6 +19,8 @@ namespace Vault.Core
     public class App : MvxApplication
     {
         public const string LOG_FILE_NAME = "log.log";
+        public static readonly string HASH_FILE_LOCATION = GetAppdataFilePath("hash");
+        public static readonly string SALT_FILE_LOCATION = GetAppdataFilePath("salt");
 
         public override void Initialize()
         {
@@ -29,7 +31,14 @@ namespace Vault.Core
 
             Mvx.IoCProvider.RegisterSingleton<IMvxMessenger>(new MvxMessengerHub());
 
-            RegisterAppStart<HomeViewModel>();
+#if !DEBUG
+            if (File.Exists(GetAppdataFilePath(HASH_FILE_LOCATION)))
+                RegisterAppStart<HomeViewModel>();
+            else
+                RegisterAppStart<SetupViewModel, bool>();
+#else
+            RegisterAppStart<HubViewModel>();
+#endif
 
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Information()
@@ -100,9 +109,7 @@ namespace Vault.Core
         public static string GetPlatformAppdataPath()
         {
             string path;
-#if DEBUG
-            path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-#else
+#if RELEASE
             if (CrossDeviceInfo.IsSupported)
             {
                 switch (CrossDeviceInfo.Current.Platform)
@@ -114,13 +121,15 @@ namespace Vault.Core
                         path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
                         break;
                     default:
-                        path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                        path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
                         break;
                 }
             } else
             {
                 path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             }
+#else
+            path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
 #endif
 
             return Path.Combine(path, "Vault");
@@ -133,6 +142,6 @@ namespace Vault.Core
         /// <returns></returns>
         public static string GetAppdataFilePath(string fileName) => Path.Combine(GetPlatformAppdataPath(), fileName);
 
-#endregion
+        #endregion
     }
 }

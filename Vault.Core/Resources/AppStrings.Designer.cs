@@ -88,11 +88,56 @@ namespace Vault.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Set Password.
+        /// </summary>
+        public static string Command_SetPassword {
+            get {
+                return ResourceManager.GetString("Command_SetPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unlock.
         /// </summary>
         public static string Command_Unlock {
             get {
                 return ResourceManager.GetString("Command_Unlock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New Password.
+        /// </summary>
+        public static string Hint_NewPassword {
+            get {
+                return ResourceManager.GetString("Hint_NewPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Old Password.
+        /// </summary>
+        public static string Hint_OldPassword {
+            get {
+                return ResourceManager.GetString("Hint_OldPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Password.
+        /// </summary>
+        public static string Hint_Password {
+            get {
+                return ResourceManager.GetString("Hint_Password", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Verify Password.
+        /// </summary>
+        public static string Hint_VerifyPassword {
+            get {
+                return ResourceManager.GetString("Hint_VerifyPassword", resourceCulture);
             }
         }
         

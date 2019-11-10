@@ -7,21 +7,26 @@ namespace Vault.Core.Services
 {
     public class PasswordService : IPasswordService
     {
-        private static readonly string HASH_FILE_LOCATION = App.GetAppdataFilePath("hash");
-        public static readonly string SALT_FILE_LOCATION = App.GetAppdataFilePath("salt");
+        
 
-        public async Task<bool> TryChangePasswordAsync(string oldPassword, string newPassword)
+        public async Task<PasswordChangeResult> TryChangePasswordAsync(string oldPassword, string newPassword)
         {
-            if (!File.Exists(HASH_FILE_LOCATION)) // No password in storage, need to set new one
+            if (!File.Exists(App.HASH_FILE_LOCATION)) // No password in storage, need to set new one
             {
-                return await TrySetPasswordAsync(newPassword).ConfigureAwait(false);
+                if (await TrySetPasswordAsync(newPassword).ConfigureAwait(false))
+                    return PasswordChangeResult.Success;
+                else
+                    return PasswordChangeResult.Failure;
             } else
             {
                 // Check that old password matches that in database
                 if (!await TryVerifyPasswordAsync(oldPassword).ConfigureAwait(false))
-                    return false;
+                    return PasswordChangeResult.OldPasswordIncorrect;
 
-                return await TrySetPasswordAsync(newPassword).ConfigureAwait(false);
+                if (await TrySetPasswordAsync(newPassword).ConfigureAwait(false))
+                    return PasswordChangeResult.Success;
+                else
+                    return PasswordChangeResult.Failure;
             }
         }
 
@@ -29,9 +34,9 @@ namespace Vault.Core.Services
         {
             return await Task.Run(() =>
             {
-                if (File.Exists(HASH_FILE_LOCATION))
+                if (File.Exists(App.HASH_FILE_LOCATION))
                 {
-                    using (StreamReader sr = new StreamReader(HASH_FILE_LOCATION))
+                    using (StreamReader sr = new StreamReader(App.HASH_FILE_LOCATION))
                         return BCrypt.Net.BCrypt.EnhancedVerify(password, sr.ReadLine());
                 }
                 else
@@ -47,10 +52,10 @@ namespace Vault.Core.Services
             {
                 string hashedPassword = BCrypt.Net.BCrypt.EnhancedHashPassword(password);
                 // Save the hashed password
-                using (StreamWriter sw = new StreamWriter(HASH_FILE_LOCATION))
+                using (StreamWriter sw = new StreamWriter(App.HASH_FILE_LOCATION))
                     await sw.WriteLineAsync(hashedPassword).ConfigureAwait(false);
                 // Save a salt to use when deriving the password into bytes for opening the realm and encryptor
-                using (StreamWriter sw = new StreamWriter(SALT_FILE_LOCATION))
+                using (StreamWriter sw = new StreamWriter(App.SALT_FILE_LOCATION))
                     await sw.WriteLineAsync(BCrypt.Net.BCrypt.GenerateSalt()).ConfigureAwait(false);
                 return true;
             } catch (Exception ex)

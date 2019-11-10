@@ -1,4 +1,6 @@
 ﻿using MvvmCross.Platforms.Wpf.Views;
+using System.Windows.Input;
+using Vault.Core.ViewModels;
 using Vault.Wpf.UI;
 
 namespace Vault.Wpf.Views
@@ -11,10 +13,22 @@ namespace Vault.Wpf.Views
             InitializeComponent();
         }
 
-        private void MvxWindow_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        private void MvxWindow_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == System.Windows.Input.Key.Escape)
-                Close();
+            ImageFullScreenViewModel model = (ImageFullScreenViewModel)ViewModel;
+
+            switch (e.Key)
+            {
+                case Key.Escape:
+                    Close();
+                    break;
+                case Key.Left:
+                    model.CycleImageLeftCommand.Execute();
+                    break;
+                case Key.Right:
+                    model.CycleImageRightCommand.Execute();
+                    break;
+            }
         }
 
         private void Button_Click(object sender, System.Windows.RoutedEventArgs e)

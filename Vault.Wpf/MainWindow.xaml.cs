@@ -3,6 +3,10 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using MvvmCross;
 using MvvmCross.Platforms.Wpf.Views;
 using MvvmCross.Plugin.Messenger;
+using Serilog;
+#if RELEASE
+using Squirrel;
+#endif
 using System;
 using System.Collections.Generic;
 using System.Windows;
@@ -25,10 +29,21 @@ namespace Vault.Wpf
             InitializeComponent();
         }
 
-        private void MvxWindow_Loaded(object sender, RoutedEventArgs e)
+        private async void MvxWindow_Loaded(object sender, RoutedEventArgs e)
         {
             _dialogSubToken = Mvx.IoCProvider.Resolve<IMvxMessenger>().SubscribeOnMainThread<DialogMessage>(OnDialogMessage);
             _fileSubToken = Mvx.IoCProvider.Resolve<IMvxMessenger>().SubscribeOnMainThread<FileMessage>(OnFileMessage);
+
+#if RELEASE
+            try
+            {
+                using (var mgr = await UpdateManager.GitHubUpdateManager("https://github.com/carlst99/Vault").ConfigureAwait(false))
+                    await mgr.UpdateApp().ConfigureAwait(false);
+            } catch (Exception ex)
+            {
+                Log.Error(ex, "Could not update application");
+            }
+#endif
         }
 
         private void OnDialogMessage(DialogMessage message)
