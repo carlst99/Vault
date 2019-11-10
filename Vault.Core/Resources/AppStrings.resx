@@ -153,6 +153,10 @@
     <value>Verify Password</value>
     <comment>This hint tells the user to verify their password</comment>
   </data>
+  <data name="Label_DarkMode" xml:space="preserve">
+    <value>Dark Mode</value>
+    <comment>This label indicates a control which can enable dark mode</comment>
+  </data>
   <data name="Label_Images" xml:space="preserve">
     <value>Images</value>
     <comment>This label says images</comment>

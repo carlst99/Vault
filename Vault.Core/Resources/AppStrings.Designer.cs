@@ -142,6 +142,15 @@ namespace Vault.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Dark Mode.
+        /// </summary>
+        public static string Label_DarkMode {
+            get {
+                return ResourceManager.GetString("Label_DarkMode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Images.
         /// </summary>
         public static string Label_Images {
