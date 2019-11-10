@@ -22,8 +22,10 @@
     </Window.Resources>
 
     <Grid x:Name="GrdImageContainer">
-        <Image Source="{Binding SelectedImage.FilePath, Converter={StaticResource PathToImageConverter}}"
-               Stretch="Uniform"/>
+        <Image HorizontalAlignment="Center"
+               VerticalAlignment="Center"
+               Source="{Binding SelectedImage.FilePath, Converter={StaticResource PathToImageConverter}}"
+               Stretch="None"/>
 
         <Grid x:Name="GrdImageCycleLeft"
               HorizontalAlignment="Left"
