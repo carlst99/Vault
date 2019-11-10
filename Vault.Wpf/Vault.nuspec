@@ -9,6 +9,7 @@
     <description>A secure media manager</description>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <copyright>Copyright 2016</copyright>
+	<iconUrl>https://github.com/carlst99/Vault/blob/master/Vault.Wpf/icon.ico</iconUrl>
     <dependencies />
   </metadata>
   <files>
