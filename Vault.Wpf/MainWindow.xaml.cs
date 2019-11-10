@@ -3,6 +3,7 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using MvvmCross;
 using MvvmCross.Platforms.Wpf.Views;
 using MvvmCross.Plugin.Messenger;
+using Serilog;
 #if RELEASE
 using Squirrel;
 #endif
@@ -34,8 +35,14 @@ namespace Vault.Wpf
             _fileSubToken = Mvx.IoCProvider.Resolve<IMvxMessenger>().SubscribeOnMainThread<FileMessage>(OnFileMessage);
 
 #if RELEASE
-            using (UpdateManager mgr = new UpdateManager("C:\\Users\\carls\\source\\repos\\Vault\\Releases"))
-                await mgr.UpdateApp().ConfigureAwait(false);
+            try
+            {
+                using (var mgr = await UpdateManager.GitHubUpdateManager("https://github.com/carlst99/Vault").ConfigureAwait(false))
+                    await mgr.UpdateApp().ConfigureAwait(false);
+            } catch (Exception ex)
+            {
+                Log.Error(ex, "Could not update application");
+            }
 #endif
         }
 
