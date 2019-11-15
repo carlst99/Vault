@@ -151,7 +151,8 @@ namespace Vault.Core.ViewModels
                     Images.Add(element);
                 }
             }
-            //Images = realm.All<Media>().Where(m => m.TypeRaw == (int)MediaType.Image).ToList();
+
+            await RaisePropertyChanged(nameof(ImageCount)).ConfigureAwait(false);
         }
     }
 }
