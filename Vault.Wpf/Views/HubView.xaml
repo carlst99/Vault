@@ -25,32 +25,43 @@
                              Kind="Lock"/>
             </mde:AppBar.AppIcon>
 
-            <ScrollViewer HorizontalScrollBarVisibility="Auto"
-                          VerticalScrollBarVisibility="Disabled">
-                <TabControl x:Name="TbCtrlNavigation"
-                            mde:TabControlAssist.TabHeaderHorizontalAlignment="Stretch"
-                            ItemsSource="{Binding NavigationItems}"
-                            SelectedIndex="{Binding SelectedPageIndex}"
-                            Style="{StaticResource MaterialDesignAppBarTabControl}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Margin="0,0,8,0"
+                           VerticalAlignment="Center"
+                           FontWeight="Bold"
+                           Text="{Binding [Label_DarkMode], Mode=OneTime}"/>
+                <ToggleButton Margin="0,0,12,0"
+                              Checked="ToggleButton_Checked"
+                              Style="{StaticResource MaterialDesignSwitchAccentToggleButton}"
+                              Unchecked="ToggleButton_Unchecked"/>
 
-                    <TabControl.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Value}"/>
-                        </DataTemplate>
-                    </TabControl.ItemTemplate>
+                <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                              VerticalScrollBarVisibility="Disabled">
+                    <TabControl x:Name="TbCtrlNavigation"
+                                mde:TabControlAssist.TabHeaderHorizontalAlignment="Stretch"
+                                ItemsSource="{Binding NavigationItems}"
+                                SelectedIndex="{Binding SelectedPageIndex}"
+                                Style="{StaticResource MaterialDesignAppBarTabControl}">
 
-                    <TabControl.ContentTemplate>
-                        <DataTemplate/>
-                    </TabControl.ContentTemplate>
+                        <TabControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Value}"/>
+                            </DataTemplate>
+                        </TabControl.ItemTemplate>
 
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="SelectionChanged">
-                            <i:InvokeCommandAction Command="{Binding OnNavigationRequestedCommand}"
-                                                   CommandParameter="{Binding ElementName=TbCtrlNavigation, Path=SelectedItem.Key}"/>
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
-                </TabControl>
-            </ScrollViewer>
+                        <TabControl.ContentTemplate>
+                            <DataTemplate/>
+                        </TabControl.ContentTemplate>
+
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="SelectionChanged">
+                                <i:InvokeCommandAction Command="{Binding OnNavigationRequestedCommand}"
+                                                       CommandParameter="{Binding ElementName=TbCtrlNavigation, Path=SelectedItem.Key}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </TabControl>
+                </ScrollViewer>
+            </StackPanel>
         </mde:AppBar>
 
         <ContentControl Grid.Row="1"

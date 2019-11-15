@@ -118,7 +118,7 @@
                         <Image Margin="6"
                                HorizontalAlignment="Center"
                                VerticalAlignment="Center"
-                               Source="{Binding ThumbPath, Converter={StaticResource PathToImageConverter}}"/>
+                               Source="{Binding ContentStream}"/>
                         <Button x:Name="BtnExpandImage"
                                 Margin="6"
                                 HorizontalAlignment="Right"

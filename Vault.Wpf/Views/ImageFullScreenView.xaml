@@ -5,11 +5,14 @@
                  xmlns:local="clr-namespace:Vault.Wpf.Views"
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                  xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+                 xmlns:ui="clr-namespace:Vault.Wpf.UI"
                  xmlns:views="clr-namespace:MvvmCross.Platforms.Wpf.Views;assembly=MvvmCross.Platforms.Wpf"
                  d:DesignHeight="450"
                  d:DesignWidth="800"
-                 Background="{StaticResource MaterialDesignBackground}"
+                 Background="{DynamicResource MaterialDesignPaper}"
+                 Cursor="None"
                  KeyDown="MvxWindow_KeyDown"
+                 MouseMove="MvxWindow_MouseMove"
                  RenderOptions.BitmapScalingMode="HighQuality"
                  UseLayoutRounding="True"
                  WindowStartupLocation="CenterScreen"
@@ -21,11 +24,26 @@
         <local:NativePathToImageValueConverter x:Key="PathToImageConverter"/>
     </Window.Resources>
 
-    <Grid x:Name="GrdImageContainer">
-        <Image HorizontalAlignment="Center"
+    <Grid x:Name="GrdImageContainer"
+          ClipToBounds="True">
+        <Image x:Name="ImgMain"
+               HorizontalAlignment="Center"
                VerticalAlignment="Center"
-               Source="{Binding SelectedImage.FilePath, Converter={StaticResource PathToImageConverter}}"
-               Stretch="None"/>
+               ui:ImageAssistant.ActualHeight="{Binding ElementName=GrdImageContainer, Path=ActualHeight}"
+               ui:ImageAssistant.StretchSource="{Binding SelectedImage.FilePath, Converter={StaticResource PathToImageConverter}}"
+               ui:ImageAssistant.StretchSourceUpdated="ImgMain_StretchSourceUpdated"
+               MouseLeftButtonDown="ImgMain_MouseLeftButtonDown"
+               MouseLeftButtonUp="ImgMain_MouseLeftButtonUp"
+               MouseMove="ImgMain_MouseMove"
+               MouseWheel="ImgMain_MouseWheel"
+               RenderTransformOrigin="0.5,0.5">
+            <Image.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </Image.RenderTransform>
+        </Image>
 
         <Grid x:Name="GrdImageCycleLeft"
               HorizontalAlignment="Left"

@@ -1,10 +1,15 @@
-﻿using MvvmCross.Converters;
+﻿using MvvmCross;
+using MvvmCross.Converters;
 using MvvmCross.Platforms.Wpf.Converters;
 using MvvmCross.Plugin.Visibility;
 using System;
 using System.Globalization;
 using System.IO;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Vault.Core.Converters;
 using Vault.Core.Services;
@@ -21,12 +26,9 @@ namespace Vault.Wpf.Views
     {
         protected override BitmapFrame Convert(string value, Type targetType, object parameter, CultureInfo culture)
         {
-            using (FileStream fs = new FileStream(value, FileMode.Open, FileAccess.Read))
-            {
-                MemoryStream ms = new MemoryStream();
-                EncryptorAssistant.GetEncryptor().DecryptAsync(fs, ms).Wait();
-                return BitmapFrame.Create(ms, BitmapCreateOptions.DelayCreation, BitmapCacheOption.OnDemand);
-            }
+            Stream imageStream = null;
+            Task.Run(() => imageStream = Mvx.IoCProvider.Resolve<IMediaLoaderService>().LoadImageAsync(value).Result).Wait();
+            return BitmapFrame.Create(imageStream, BitmapCreateOptions.DelayCreation, BitmapCacheOption.OnDemand);
         }
     }
 
