@@ -88,5 +88,12 @@ namespace Vault.Wpf.Views
             st.ScaleX += zoom;
             st.ScaleY += zoom;
         }
+
+        private void ImgMain_StretchSourceUpdated(object sender, RoutedEventArgs e)
+        {
+            var st = (ScaleTransform)((TransformGroup)ImgMain.RenderTransform).Children.First(sc => sc is ScaleTransform);
+            st.ScaleX = 1;
+            st.ScaleY = 1;
+        }
     }
 }

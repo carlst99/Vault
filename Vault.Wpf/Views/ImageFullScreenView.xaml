@@ -31,6 +31,7 @@
                VerticalAlignment="Center"
                ui:ImageAssistant.ActualHeight="{Binding ElementName=GrdImageContainer, Path=ActualHeight}"
                ui:ImageAssistant.StretchSource="{Binding SelectedImage.FilePath, Converter={StaticResource PathToImageConverter}}"
+               ui:ImageAssistant.StretchSourceUpdated="ImgMain_StretchSourceUpdated"
                MouseWheel="ImgMain_MouseWheel"
                RenderTransformOrigin="0.5,0.5">
             <Image.RenderTransform>
