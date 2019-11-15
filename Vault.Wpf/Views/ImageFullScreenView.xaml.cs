@@ -38,7 +38,7 @@ namespace Vault.Wpf.Views
             }
         }
 
-        private void Button_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void Button_Click(object sender, RoutedEventArgs e)
         {
             Close();
         }
@@ -76,10 +76,20 @@ namespace Vault.Wpf.Views
             var st = (ScaleTransform)((TransformGroup)ImgMain.RenderTransform).Children.First(sc => sc is ScaleTransform);
             double zoom = e.Delta > 0 ? .2 : -.2;
 
+            // Centre on cursor location
+            Point mouseLoc = Mouse.GetPosition(ImgMain);
+            ImgMain.RenderTransformOrigin = new Point(mouseLoc.X / ImgMain.ActualWidth, mouseLoc.Y / ImgMain.ActualHeight);
+
             // Don't shrink
             // Only need to check X scale as we are scaling both X and Y evenly
-            if (st.ScaleX <= 1 && zoom < 0)
+            if (st.ScaleX == 1 && zoom < 0)
+            {
                 return;
+            } else if (st.ScaleX < 1 && zoom < 0)
+            {
+                st.ScaleX = 1;
+                return;
+            }
 
             // Likewise, don't zoom in too much
             if (st.ScaleX >= 5 && zoom > 0)
