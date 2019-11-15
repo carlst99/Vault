@@ -38,6 +38,8 @@ namespace Vault.Core.Model.DbContext
         /// </summary>
         public string ThumbPath { get; set; }
 
+        #region Ctors
+
         public Media() { }
 
         public Media(int id, MediaType type)
@@ -45,6 +47,8 @@ namespace Vault.Core.Model.DbContext
             Id = id;
             Type = type;
         }
+
+        #endregion
 
         public Media(MediaType type, string name, string filePath, string thumbPath = null)
         {
@@ -56,6 +60,7 @@ namespace Vault.Core.Model.DbContext
         }
 
         #region Object Overrides
+
         public override string ToString()
         {
             return Name;
