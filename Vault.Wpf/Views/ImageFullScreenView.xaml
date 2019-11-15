@@ -32,6 +32,9 @@
                ui:ImageAssistant.ActualHeight="{Binding ElementName=GrdImageContainer, Path=ActualHeight}"
                ui:ImageAssistant.StretchSource="{Binding SelectedImage.FilePath, Converter={StaticResource PathToImageConverter}}"
                ui:ImageAssistant.StretchSourceUpdated="ImgMain_StretchSourceUpdated"
+               MouseLeftButtonDown="ImgMain_MouseLeftButtonDown"
+               MouseLeftButtonUp="ImgMain_MouseLeftButtonUp"
+               MouseMove="ImgMain_MouseMove"
                MouseWheel="ImgMain_MouseWheel"
                RenderTransformOrigin="0.5,0.5">
             <Image.RenderTransform>

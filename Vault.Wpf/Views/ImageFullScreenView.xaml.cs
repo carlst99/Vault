@@ -13,7 +13,9 @@ namespace Vault.Wpf.Views
     public partial class ImageFullScreenView : MvxWindow
     {
         private bool _cursorVisible;
-        private Point _mousePosition;
+        private Point _lastMousePosition;
+        private Point _panStartPosition;
+        private Point _panOrigin;
 
         public ImageFullScreenView()
         {
@@ -49,7 +51,7 @@ namespace Vault.Wpf.Views
                 return;
 
             Cursor = Cursors.Arrow;
-            _mousePosition = Mouse.GetPosition(this);
+            _lastMousePosition = Mouse.GetPosition(this);
             _cursorVisible = true;
             RunCursorHideTask();
         }
@@ -59,9 +61,9 @@ namespace Vault.Wpf.Views
             Task.Delay(1000).ContinueWith((_) => Dispatcher.Invoke(() =>
             {
                 Point currentMousePos = Mouse.GetPosition(this);
-                if (currentMousePos != _mousePosition)
+                if (currentMousePos != _lastMousePosition)
                 {
-                    _mousePosition = currentMousePos;
+                    _lastMousePosition = currentMousePos;
                     RunCursorHideTask();
                 } else
                 {
@@ -104,6 +106,34 @@ namespace Vault.Wpf.Views
             var st = (ScaleTransform)((TransformGroup)ImgMain.RenderTransform).Children.First(sc => sc is ScaleTransform);
             st.ScaleX = 1;
             st.ScaleY = 1;
+
+            var tt = (TranslateTransform)((TransformGroup)ImgMain.RenderTransform).Children.First(tr => tr is TranslateTransform);
+            tt.X = 0;
+            tt.Y = 0;
+        }
+
+        private void ImgMain_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var tt = (TranslateTransform)((TransformGroup)ImgMain.RenderTransform).Children.First(tr => tr is TranslateTransform);
+            _panStartPosition = e.GetPosition(GrdImageContainer);
+            _panOrigin = new Point(tt.X, tt.Y);
+            ImgMain.CaptureMouse();
+        }
+
+        private void ImgMain_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (ImgMain.IsMouseCaptured)
+            {
+                var tt = (TranslateTransform)((TransformGroup)ImgMain.RenderTransform).Children.First(tr => tr is TranslateTransform);
+                Vector v = _panStartPosition - e.GetPosition(GrdImageContainer);
+                tt.X = _panOrigin.X - v.X;
+                tt.Y = _panOrigin.Y - v.Y;
+            }
+        }
+
+        private void ImgMain_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            ImgMain.ReleaseMouseCapture();
         }
     }
 }
