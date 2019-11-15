@@ -1,7 +1,9 @@
 ﻿using MvvmCross.Platforms.Wpf.Views;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using Vault.Core.ViewModels;
 using Vault.Wpf.UI;
 
@@ -67,6 +69,24 @@ namespace Vault.Wpf.Views
                     _cursorVisible = false;
                 }
             }));
+        }
+
+        private void ImgMain_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            var st = (ScaleTransform)((TransformGroup)ImgMain.RenderTransform).Children.First(sc => sc is ScaleTransform);
+            double zoom = e.Delta > 0 ? .2 : -.2;
+
+            // Don't shrink
+            // Only need to check X scale as we are scaling both X and Y evenly
+            if (st.ScaleX <= 1 && zoom < 0)
+                return;
+
+            // Likewise, don't zoom in too much
+            if (st.ScaleX >= 5 && zoom > 0)
+                return;
+
+            st.ScaleX += zoom;
+            st.ScaleY += zoom;
         }
     }
 }
