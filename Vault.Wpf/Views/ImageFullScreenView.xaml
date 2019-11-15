@@ -5,6 +5,7 @@
                  xmlns:local="clr-namespace:Vault.Wpf.Views"
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                  xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+                 xmlns:ui="clr-namespace:Vault.Wpf.UI"
                  xmlns:views="clr-namespace:MvvmCross.Platforms.Wpf.Views;assembly=MvvmCross.Platforms.Wpf"
                  d:DesignHeight="450"
                  d:DesignWidth="800"
@@ -26,8 +27,8 @@
     <Grid x:Name="GrdImageContainer">
         <Image HorizontalAlignment="Center"
                VerticalAlignment="Center"
-               Source="{Binding SelectedImage.FilePath, Converter={StaticResource PathToImageConverter}}"
-               Stretch="None"/>
+               ui:ImageAssistant.ActualHeight="{Binding ElementName=GrdImageContainer, Path=ActualHeight}"
+               ui:ImageAssistant.StretchSource="{Binding SelectedImage.FilePath, Converter={StaticResource PathToImageConverter}}"/>
 
         <Grid x:Name="GrdImageCycleLeft"
               HorizontalAlignment="Left"
