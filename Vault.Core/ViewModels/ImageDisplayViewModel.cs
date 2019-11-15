@@ -4,6 +4,7 @@ using MvvmCross.Plugin.Messenger;
 using Realms;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Vault.Core.Model.DbContext;
 using Vault.Core.Model.Messages;
@@ -17,9 +18,10 @@ namespace Vault.Core.ViewModels
 
         private readonly IMvxMessenger _messenger;
         private readonly IImportService _importService;
+        private readonly IMediaLoaderService _mediaLoaderService;
 
         private bool _isImportInProgress;
-        private List<Media> _images;
+        private ObservableCollection<Media> _images;
         private Media _selectedImage;
 
         #endregion
@@ -53,7 +55,7 @@ namespace Vault.Core.ViewModels
         /// <summary>
         /// Gets or sets the list of images
         /// </summary>
-        public List<Media> Images
+        public ObservableCollection<Media> Images
         {
             get => _images;
             set => SetProperty(ref _images, value);
@@ -70,11 +72,18 @@ namespace Vault.Core.ViewModels
 
         #endregion
 
-        public ImageDisplayViewModel(IMvxNavigationService navigationService, IMvxMessenger messenger, IImportService importService)
+        public ImageDisplayViewModel(
+            IMvxNavigationService navigationService,
+            IMvxMessenger messenger,
+            IImportService importService,
+            IMediaLoaderService mediaLoaderService)
             : base(navigationService)
         {
             _messenger = messenger;
             _importService = importService;
+            _mediaLoaderService = mediaLoaderService;
+
+            Images = new ObservableCollection<Media>();
             UpdateImageList();
         }
 
@@ -124,10 +133,25 @@ namespace Vault.Core.ViewModels
             await RaisePropertyChanged(nameof(ImageCount)).ConfigureAwait(true);
         }
 
-        private void UpdateImageList()
+        private async void UpdateImageList()
         {
             Realm realm = RealmHelpers.GetRealmInstance();
-            Images = realm.All<Media>().Where(m => m.TypeRaw == (int)MediaType.Image).ToList();
+            IEnumerable<Media> diff = realm.All<Media>().Where(m => m.TypeRaw == (int)MediaType.Image).ToList();
+            diff = diff.Except(Images);
+
+            foreach (Media element in diff)
+            {
+                if (Images.Contains(element)) // If the image list has it but the realm doesn't, remove it
+                {
+                    Images.Remove(element);
+                }
+                else // If the realm has it but the image list doesn't, add it
+                {
+                    element.ContentStream = await _mediaLoaderService.LoadImageAsync(element.ThumbPath).ConfigureAwait(true);
+                    Images.Add(element);
+                }
+            }
+            //Images = realm.All<Media>().Where(m => m.TypeRaw == (int)MediaType.Image).ToList();
         }
     }
 }
