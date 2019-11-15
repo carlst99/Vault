@@ -12,13 +12,13 @@ namespace Vault.Core.ViewModels
         #region Fields
 
         private object _detailView;
-        private int _selectedPageIndex;
+        private Tuple<Type, string> _selectedPage;
 
         #endregion
 
         #region Commands
 
-        public IMvxCommand OnNavigationRequestedCommand => new MvxCommand<Type>(OnNavigateRequested);
+        public IMvxCommand OnNavigationRequestedCommand => new MvxCommand(OnNavigateRequested);
 
         #endregion
 
@@ -34,28 +34,28 @@ namespace Vault.Core.ViewModels
         }
 
         /// <summary>
-        /// Gets or sets the index of the selected navigation item
-        /// </summary>
-        public int SelectedPageIndex
-        {
-            get => _selectedPageIndex;
-            set => SetProperty(ref _selectedPageIndex, value);
-        }
-
-        /// <summary>
         /// Gets a dictionary of navigatable viewmodel types, and their friendly name
         /// </summary>
-        public Dictionary<Type, string> NavigationItems { get; }
+        public List<Tuple<Type, string>> NavigationItems { get; }
+
+        /// <summary>
+        /// Gets or sets the selected page
+        /// </summary>
+        public Tuple<Type, string> SelectedPage
+        {
+            get => _selectedPage;
+            set => SetProperty(ref _selectedPage, value);
+        }
 
         #endregion
 
         public HubViewModel(IMvxNavigationService navigationService)
             : base(navigationService)
         {
-            NavigationItems = new Dictionary<Type, string>()
+            NavigationItems = new List<Tuple<Type, string>>()
             {
-                { typeof(ImageDisplayViewModel), "Images" },
-                { typeof(VideoDisplayViewModel), "Videos" }
+                new Tuple<Type, string>(typeof(ImageDisplayViewModel), "Images"),
+                new Tuple<Type, string>(typeof(VideoDisplayViewModel), "Videos")
             };
         }
 
@@ -64,14 +64,14 @@ namespace Vault.Core.ViewModels
             base.ViewAppearing();
             if (NavigationItems.Count > 0)
             {
-                OnNavigateRequested(NavigationItems.Keys.First());
-                SelectedPageIndex = 0;
+                NavigationService.Navigate(NavigationItems[0].Item1);
+                SelectedPage = NavigationItems[0];
             }
         }
 
-        private void OnNavigateRequested(Type navigationItem)
+        private void OnNavigateRequested()
         {
-            NavigationService.Navigate(navigationItem);
+            NavigationService.Navigate(SelectedPage.Item1);
         }
     }
 }
