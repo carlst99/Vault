@@ -1,9 +1,21 @@
 ﻿using Realms;
+using System.IO;
 
 namespace Vault.Core.Model.DbContext
 {
     public class Media : RealmObject, IContextItem
     {
+        #region Fields
+
+        private Stream _contentStream;
+
+        #endregion
+
+        #region DB Properties
+
+        /// <summary>
+        /// Gets the realm-supported <see cref="int"/> representation of <see cref="Type"/>
+        /// </summary>
         public int TypeRaw { get; set; }
 
         /// <summary>
@@ -20,6 +32,20 @@ namespace Vault.Core.Model.DbContext
         public string Name { get; set; }
 
         /// <summary>
+        /// Gets or sets the path to the file
+        /// </summary>
+        public string FilePath { get; set; }
+
+        /// <summary>
+        /// Gets or sets the path to the thumbnail
+        /// </summary>
+        public string ThumbPath { get; set; }
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
         /// Gets or sets the type of media in the store
         /// </summary>
         public MediaType Type
@@ -29,14 +55,19 @@ namespace Vault.Core.Model.DbContext
         }
 
         /// <summary>
-        /// Gets or sets the path to the file
+        /// Gets or sets a stream of the image. This property must be set by an external method and is intended as a UI binding helper
         /// </summary>
-        public string FilePath { get; set; }
+        public Stream ContentStream
+        {
+            get => _contentStream;
+            set
+            {
+                _contentStream = value;
+                RaisePropertyChanged(nameof(_contentStream));
+            }
+        }
 
-        /// <summary>
-        /// Gets or sets the path to the thumbnail
-        /// </summary>
-        public string ThumbPath { get; set; }
+        #endregion
 
         #region Ctors
 
@@ -48,8 +79,6 @@ namespace Vault.Core.Model.DbContext
             Type = type;
         }
 
-        #endregion
-
         public Media(MediaType type, string name, string filePath, string thumbPath = null)
         {
             Id = RealmHelpers.GetNextId<Media>();
@@ -58,6 +87,8 @@ namespace Vault.Core.Model.DbContext
             FilePath = filePath;
             ThumbPath = thumbPath;
         }
+
+        #endregion
 
         #region Object Overrides
 
