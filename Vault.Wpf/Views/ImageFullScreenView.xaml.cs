@@ -9,6 +9,9 @@ using Vault.Wpf.UI;
 
 namespace Vault.Wpf.Views
 {
+    // Excellent zoom/pan code made by Ian Oakes on StackOverflow
+    // https://stackoverflow.com/questions/741956/pan-zoom-image
+
     [ModalPresentation(OwnerWindowType = typeof(MainWindow))]
     public partial class ImageFullScreenView : MvxWindow
     {
