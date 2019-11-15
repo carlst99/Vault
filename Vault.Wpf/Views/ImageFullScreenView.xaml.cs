@@ -124,8 +124,30 @@ namespace Vault.Wpf.Views
         {
             if (ImgMain.IsMouseCaptured)
             {
+                //var st = (ScaleTransform)((TransformGroup)ImgMain.RenderTransform).Children.First(sc => sc is ScaleTransform);
                 var tt = (TranslateTransform)((TransformGroup)ImgMain.RenderTransform).Children.First(tr => tr is TranslateTransform);
                 Vector v = _panStartPosition - e.GetPosition(GrdImageContainer);
+
+                //double scaledWidth = ImgMain.ActualWidth * st.ScaleX / 2d;
+                //double leftEdge = (GrdImageContainer.ActualWidth / 2) - scaledWidth;
+                //double leftEdgePos = leftEdge + tt.X;
+                //double rightEdge = (GrdImageContainer.ActualWidth / 2) + scaledWidth;
+                //double rightEdgePos = rightEdge + tt.X;
+                //if (leftEdgePos > 0 && v.X > 1)
+                //    tt.X = _panOrigin.X - v.X;
+                //else if (rightEdgePos < GrdImageContainer.ActualWidth && v.X < 0)
+                //    tt.X = _panOrigin.X - v.X;
+
+                //double scaledHeight = ImgMain.ActualHeight * st.ScaleY / 2d;
+                //double topEdge = (GrdImageContainer.ActualHeight / 2) - scaledHeight;
+                //double topEdgePos = topEdge + tt.Y;
+                //double bottomEdge = (GrdImageContainer.ActualHeight / 2) + scaledHeight;
+                //double bottomEdgePos = bottomEdge + tt.Y;
+                //if ((topEdgePos > 0 && v.Y > 1) || (topEdgePos < 0 && v.Y < 1))
+                //    tt.Y = _panOrigin.Y - v.Y;
+                //else if (bottomEdgePos < GrdImageContainer.ActualHeight && v.Y < 0)
+                //    tt.Y = _panOrigin.Y - v.Y;
+
                 tt.X = _panOrigin.X - v.X;
                 tt.Y = _panOrigin.Y - v.Y;
             }
