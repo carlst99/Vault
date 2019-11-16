@@ -206,44 +206,6 @@ namespace Vault.Core.Services
                 ShowErrorDialog("There was an error exporting the file. Please try again. It may be that the file is corrupt and cannot be exported.");
                 return false;
             }
-
-            //switch (item.Type)
-            //{
-            //    case MediaType.Image:
-            //        return await TryExportImageAsync(item, outputPath).ConfigureAwait(false);
-            //}
-        }
-
-        private async Task<bool> TryExportImageAsync(Media image, string outputPath)
-        {
-            AesHmacEncryptor encryptor = EncryptorAssistant.GetEncryptor();
-
-            return await Task.Run<bool>(() =>
-            {
-                // Check that the file to import exists
-                if (!File.Exists(image.FilePath))
-                {
-                    Log.Information("Export - Could not locate the image to export");
-                    ShowErrorDialog("There was an error exporting the file. Please try again. It may be that the file is corrupt and cannot be exported.");
-                    return false;
-                }
-
-                try
-                {
-                    using (FileStream fs = new FileStream(image.FilePath, FileMode.Open, FileAccess.Read))
-                    using (FileStream imageOutput = new FileStream(outputPath, FileMode.CreateNew, FileAccess.ReadWrite))
-                    using (MemoryStream imageStore = new MemoryStream())
-                    {
-                        encryptor.DecryptAsync(fs, imageOutput);
-                    }
-                    return true;
-                } catch (Exception ex)
-                {
-                    App.LogError("Error exporting media", ex);
-                    ShowErrorDialog("There was an error exporting the file. Please try again. It may be that the file is corrupt and cannot be exported.");
-                    return false;
-                }
-            }).ConfigureAwait(false);
         }
 
         #endregion
