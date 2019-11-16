@@ -52,6 +52,7 @@
                         Minimum="96"
                         Orientation="Horizontal"
                         ToolTip="{Binding [ToolTip_ThumbnailSlider], Mode=OneTime}"
+                        ValueChanged="SldrThumbnailSize_ValueChanged"
                         Value="128"/>
 
                 <TextBlock Margin="8,0,0,0"

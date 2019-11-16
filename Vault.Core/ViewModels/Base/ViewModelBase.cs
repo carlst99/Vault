@@ -20,7 +20,7 @@ namespace Vault.Core.ViewModels.Base
             Log.Verbose("Navigated to " + GetType().Name);
 
             RealmInstance = RealmHelpers.GetRealmInstance();
-            UserPreferences = RealmHelpers.GetPreferences(RealmInstance);
+            UserPreferences = RealmHelpers.GetUserPreferences(RealmInstance);
         }
     }
 
@@ -37,7 +37,7 @@ namespace Vault.Core.ViewModels.Base
             Log.Verbose("Navigated to " + GetType().Name);
 
             RealmInstance = RealmHelpers.GetRealmInstance();
-            UserPreferences = RealmHelpers.GetPreferences(RealmInstance);
+            UserPreferences = RealmHelpers.GetUserPreferences(RealmInstance);
         }
     }
 }

@@ -8,16 +8,16 @@ namespace Vault.Wpf.Views
 {
     public partial class HubView : MvxWpfView
     {
-        private readonly Realm _realm;
-        private readonly Preferences _preferences;
+        private readonly Realm _realmInstance;
+        private readonly Preferences _userPreferences;
 
         public HubView()
         {
             InitializeComponent();
-            _realm = RealmHelpers.GetRealmInstance();
-            _preferences = RealmHelpers.GetPreferences(_realm);
+            _realmInstance = RealmHelpers.GetRealmInstance();
+            _userPreferences = RealmHelpers.GetUserPreferences(_realmInstance);
 
-            if (_preferences.DarkModeEnabled)
+            if (_userPreferences.DarkModeEnabled)
             {
                 EnableDarkMode(this, null);
                 TglBtnDarkMode.IsChecked = true;
@@ -27,13 +27,13 @@ namespace Vault.Wpf.Views
         private void EnableDarkMode(object sender, System.Windows.RoutedEventArgs e)
         {
             ModifyTheme(t => t.SetBaseTheme(Theme.Dark));
-            _realm.Write(() => _preferences.DarkModeEnabled = true);
+            _realmInstance.Write(() => _userPreferences.DarkModeEnabled = true);
         }
 
         private void DisableDarkMode(object sender, System.Windows.RoutedEventArgs e)
         {
             ModifyTheme(t => t.SetBaseTheme(Theme.Light));
-            _realm.Write(() => _preferences.DarkModeEnabled = false);
+            _realmInstance.Write(() => _userPreferences.DarkModeEnabled = false);
         }
 
         private static void ModifyTheme(Action<ITheme> modificationAction)

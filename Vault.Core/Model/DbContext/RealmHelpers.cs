@@ -85,7 +85,7 @@ namespace Vault.Core.Model.DbContext
 
         public static void ClearNextIds() => _currentIds.Clear();
 
-        public static Preferences GetPreferences(Realm instance = null)
+        public static Preferences GetUserPreferences(Realm instance = null)
         {
             if (instance == null)
                 instance = GetRealmInstance();
