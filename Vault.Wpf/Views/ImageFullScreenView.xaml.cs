@@ -40,6 +40,9 @@ namespace Vault.Wpf.Views
                 case Key.Right:
                     model.CycleImageRightCommand.Execute();
                     break;
+                case Key.System:
+                    e.Handled = true;
+                    break;
             }
         }
 
