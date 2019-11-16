@@ -90,19 +90,18 @@ namespace Vault.Core.ViewModels
         {
             IsImportInProgress = true;
 
-            _messenger.Publish(new FileMessage(
+            _messenger.Publish(new OpenFileDialogMessage(
                 this,
                 "Select images to import",
-                FileMessage.DialogType.OpenFile,
-                FileMessage.DefaultImageFilters)
+                OpenFileDialogMessage.DefaultImageFilters)
             {
                 Callback = CompleteImport
             });
         }
 
-        private async void CompleteImport(FileMessage.DialogResult result, IEnumerable<string> imagePaths)
+        private async void CompleteImport(bool result, IEnumerable<string> imagePaths)
         {
-            if (result == FileMessage.DialogResult.Failed)
+            if (!result)
             {
                 IsImportInProgress = false;
                 return;
@@ -120,7 +119,34 @@ namespace Vault.Core.ViewModels
 
         private void ExportImage()
         {
-            throw new NotImplementedException();
+            if (SelectedImage == null)
+            {
+                _messenger.Publish(new DialogMessage(this, "Woah!", "Please select an image to export", DialogMessage.DialogMessageType.Info));
+                return;
+            }
+
+            IsImportInProgress = true;
+
+            _messenger.Publish(new SaveFileDialogMessage(
+                this,
+                "Image Export",
+                SelectedImage.Name,
+                ".png")
+            {
+                Callback = CompleteExport
+            });
+        }
+
+        private async void CompleteExport(bool result, string imagePath)
+        {
+            if (!result)
+            {
+                IsImportInProgress = false;
+                return;
+            }
+
+            await _importService.TryExportMediaAsync(SelectedImage, imagePath).ConfigureAwait(false);
+            IsImportInProgress = false;
         }
 
         private async void RemoveImage()

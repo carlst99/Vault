@@ -21,7 +21,8 @@ namespace Vault.Wpf
     {
 #pragma warning disable IDE0052 // Remove unread private members
         private MvxSubscriptionToken _dialogSubToken;
-        private MvxSubscriptionToken _fileSubToken;
+        private MvxSubscriptionToken _openFileDialogSubToken;
+        private MvxSubscriptionToken _saveFileDialogSubToken;
 #pragma warning restore IDE0052 // Remove unread private members
 
         public MainWindow()
@@ -32,7 +33,8 @@ namespace Vault.Wpf
         private async void MvxWindow_Loaded(object sender, RoutedEventArgs e)
         {
             _dialogSubToken = Mvx.IoCProvider.Resolve<IMvxMessenger>().SubscribeOnMainThread<DialogMessage>(OnDialogMessage);
-            _fileSubToken = Mvx.IoCProvider.Resolve<IMvxMessenger>().SubscribeOnMainThread<FileMessage>(OnFileMessage);
+            _openFileDialogSubToken = Mvx.IoCProvider.Resolve<IMvxMessenger>().SubscribeOnMainThread<OpenFileDialogMessage>(OnOpenFileDialogMessage);
+            _saveFileDialogSubToken = Mvx.IoCProvider.Resolve<IMvxMessenger>().SubscribeOnMainThread<SaveFileDialogMessage>(OnSaveFileDialogMessage);
 
 #if RELEASE
             try
@@ -66,38 +68,50 @@ namespace Vault.Wpf
             }
         }
 
-        private void OnFileMessage(FileMessage message)
+        private void OnOpenFileDialogMessage(OpenFileDialogMessage message)
         {
-            switch (message.Type)
+            CommonOpenFileDialog cofd = new CommonOpenFileDialog
             {
-                case FileMessage.DialogType.OpenFile:
-                    CommonOpenFileDialog cofd = new CommonOpenFileDialog
-                    {
-                        Title = message.Title,
-                        EnsurePathExists = true,
-                        Multiselect = message.MultiSelect
-                    };
-                    foreach (Tuple<string, string> filter in message.Filters)
-                    {
-                        cofd.Filters.Add(new CommonFileDialogFilter(filter.Item1, filter.Item2));
-                    }
+                Title = message.Title,
+                EnsurePathExists = true,
+                Multiselect = message.MultiSelect
+            };
+            foreach (Tuple<string, string> filter in message.Filters)
+                cofd.Filters.Add(new CommonFileDialogFilter(filter.Item1, filter.Item2));
 
-                    CommonFileDialogResult result = cofd.ShowDialog();
-                    cofd.Dispose();
-                    if (result == CommonFileDialogResult.Ok)
-                    {
-                        if (message.MultiSelect)
-                            message.Callback?.Invoke(FileMessage.DialogResult.Succeeded, cofd.FileNames);
-                        else
-                            message.Callback?.Invoke(FileMessage.DialogResult.Succeeded, new List<string> { cofd.FileName });
-                    }
-                    else
-                    {
-                        message.Callback?.Invoke(FileMessage.DialogResult.Failed, null);
-                    }
-
-                    break;
+            CommonFileDialogResult result = cofd.ShowDialog();
+            cofd.Dispose();
+            if (result == CommonFileDialogResult.Ok)
+            {
+                if (message.MultiSelect)
+                    message.Callback?.Invoke(true, cofd.FileNames);
+                else
+                    message.Callback?.Invoke(true, new List<string> { cofd.FileName });
             }
+            else
+            {
+                message.Callback?.Invoke(false, null);
+            }
+        }
+
+        private void OnSaveFileDialogMessage(SaveFileDialogMessage message)
+        {
+            CommonSaveFileDialog csfd = new CommonSaveFileDialog
+            {
+                Title = message.Title,
+                EnsurePathExists = true,
+                
+                DefaultFileName = message.DefaultFileName,
+                DefaultExtension = message.DefaultFileExtension,
+                EnsureValidNames = true
+            };
+
+            CommonFileDialogResult sResult = csfd.ShowDialog();
+            csfd.Dispose();
+            if (sResult == CommonFileDialogResult.Ok)
+                message.Callback?.Invoke(true, csfd.FileName);
+            else
+                message.Callback?.Invoke(false, null);
         }
     }
 }

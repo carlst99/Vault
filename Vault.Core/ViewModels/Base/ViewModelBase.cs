@@ -11,8 +11,8 @@ namespace Vault.Core.ViewModels.Base
     {
         public string this[string index] => AppStrings.ResourceManager.GetString(index);
         public IMvxNavigationService NavigationService { get; }
-        public Realm RealmInstance { get; }
-        public Preferences UserPreferences { get; }
+        public Realm RealmInstance { get; set; }
+        public Preferences UserPreferences { get; set; }
 
         protected ViewModelBase(IMvxNavigationService navigationService)
         {
@@ -28,8 +28,8 @@ namespace Vault.Core.ViewModels.Base
     {
         public string this[string index] => AppStrings.ResourceManager.GetString(index);
         public IMvxNavigationService NavigationService { get; }
-        public Realm RealmInstance { get; }
-        public Preferences UserPreferences { get; }
+        public Realm RealmInstance { get; set; }
+        public Preferences UserPreferences { get; set; }
 
         protected ViewModelBase(IMvxNavigationService navigationService)
         {

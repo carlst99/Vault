@@ -2,6 +2,7 @@
 using Realms;
 using Serilog;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Processing;
 using StreamEncryptor.Predefined;
@@ -16,7 +17,11 @@ namespace Vault.Core.Services
 {
     public class ImportService : IImportService
     {
+        /// <summary>
+        /// Defines the maximum size of a thumbnail
+        /// </summary>
         public const double MAX_THUMB_SIZE = 256d;
+
 #if DEBUG
         public static readonly string IMAGE_FOLDER_PATH = App.GetAppdataFilePath("0D");
         public static readonly string VIDEO_FOLDER_PATH = App.GetAppdataFilePath("1D");
@@ -173,6 +178,76 @@ namespace Vault.Core.Services
             }
         }
 
+        #region Export
+
+        public async Task<bool> TryExportMediaAsync(Media item, string outputPath)
+        {
+            AesHmacEncryptor encryptor = EncryptorAssistant.GetEncryptor();
+
+            // Check that the file to import exists
+            if (!File.Exists(item.FilePath))
+            {
+                Log.Information("Export - Could not locate the image to export");
+                ShowErrorDialog("There was an error exporting the file. Please try again. It may be that the file is corrupt and cannot be exported.");
+                return false;
+            }
+
+            try
+            {
+                using (FileStream fs = new FileStream(item.FilePath, FileMode.Open, FileAccess.Read))
+                using (FileStream imageOutput = new FileStream(outputPath, FileMode.CreateNew, FileAccess.ReadWrite))
+                {
+                    await encryptor.DecryptAsync(fs, imageOutput).ConfigureAwait(false);
+                }
+                return true;
+            } catch (Exception ex)
+            {
+                App.LogError("Error exporting media", ex);
+                ShowErrorDialog("There was an error exporting the file. Please try again. It may be that the file is corrupt and cannot be exported.");
+                return false;
+            }
+
+            //switch (item.Type)
+            //{
+            //    case MediaType.Image:
+            //        return await TryExportImageAsync(item, outputPath).ConfigureAwait(false);
+            //}
+        }
+
+        private async Task<bool> TryExportImageAsync(Media image, string outputPath)
+        {
+            AesHmacEncryptor encryptor = EncryptorAssistant.GetEncryptor();
+
+            return await Task.Run<bool>(() =>
+            {
+                // Check that the file to import exists
+                if (!File.Exists(image.FilePath))
+                {
+                    Log.Information("Export - Could not locate the image to export");
+                    ShowErrorDialog("There was an error exporting the file. Please try again. It may be that the file is corrupt and cannot be exported.");
+                    return false;
+                }
+
+                try
+                {
+                    using (FileStream fs = new FileStream(image.FilePath, FileMode.Open, FileAccess.Read))
+                    using (FileStream imageOutput = new FileStream(outputPath, FileMode.CreateNew, FileAccess.ReadWrite))
+                    using (MemoryStream imageStore = new MemoryStream())
+                    {
+                        encryptor.DecryptAsync(fs, imageOutput);
+                    }
+                    return true;
+                } catch (Exception ex)
+                {
+                    App.LogError("Error exporting media", ex);
+                    ShowErrorDialog("There was an error exporting the file. Please try again. It may be that the file is corrupt and cannot be exported.");
+                    return false;
+                }
+            }).ConfigureAwait(false);
+        }
+
+        #endregion
+
         /// <summary>
         /// Shows an error dialog to the user
         /// </summary>
@@ -182,7 +257,7 @@ namespace Vault.Core.Services
             _messenger.Publish(new DialogMessage(this, "Import Error", errorMessage, DialogMessage.DialogMessageType.Error));
         }
 
-#region Filesystem Helpers
+        #region Filesystem Helpers
 
         /// <summary>
         /// Checks that a directory exists, and if not creates the directory
@@ -226,6 +301,6 @@ namespace Vault.Core.Services
             return Path.Combine(mediaDirectory, id.ToString() + ".vaultt");
         }
 
-#endregion
+        #endregion
     }
 }

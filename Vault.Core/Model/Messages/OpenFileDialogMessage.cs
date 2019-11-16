@@ -5,22 +5,8 @@ using System.Text;
 
 namespace Vault.Core.Model.Messages
 {
-    public class FileMessage : MvxMessage
+    public class OpenFileDialogMessage : MvxMessage
     {
-        #region Enums
-
-        public enum DialogType
-        {
-            OpenFile, OpenFolder, SaveFile
-        }
-
-        public enum DialogResult
-        {
-            Failed, Succeeded
-        }
-
-        #endregion
-
         #region Default filters
 
         public static readonly List<Tuple<string, string>> DefaultImageFilters = new List<Tuple<string, string>>
@@ -41,19 +27,17 @@ namespace Vault.Core.Model.Messages
 
         #endregion
 
-        public DialogType Type { get; set; }
         public string Title { get; set; }
         public List<Tuple<string, string>> Filters { get; set; }
-        public Action<DialogResult, IEnumerable<string>> Callback { get; set; }
+        public Action<bool, IEnumerable<string>> Callback { get; set; }
         public bool MultiSelect { get; set; }
 
-        public FileMessage(object sender, string title, DialogType type, List<Tuple<string, string>> filters)
-            : base (sender)
+        public OpenFileDialogMessage(object sender, string title, List<Tuple<string, string>> filters, bool multiSelect = true)
+            : base(sender)
         {
             Title = title;
-            Type = type;
             Filters = filters;
-            MultiSelect = true;
+            MultiSelect = multiSelect;
         }
     }
 }

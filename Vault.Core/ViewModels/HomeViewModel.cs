@@ -64,6 +64,9 @@ namespace Vault.Core.ViewModels
             {
                 await RealmHelpers.SetEncryptionKeyAsync(Password).ConfigureAwait(false);
                 EncryptorAssistant.SetEncryptorPassword(Password);
+
+                RealmInstance = RealmHelpers.GetRealmInstance();
+                UserPreferences = RealmHelpers.GetUserPreferences(RealmInstance);
                 await NavigationService.Navigate<HubViewModel>().ConfigureAwait(false);
             }
             else

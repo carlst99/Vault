@@ -83,6 +83,10 @@ namespace Vault.Core.ViewModels
                 case PasswordChangeResult.Success:
                     await RealmHelpers.SetEncryptionKeyAsync(Password).ConfigureAwait(false);
                     EncryptorAssistant.SetEncryptorPassword(Password);
+
+                    RealmInstance = RealmHelpers.GetRealmInstance();
+                    UserPreferences = RealmHelpers.GetUserPreferences(RealmInstance);
+
                     await NavigationService.Navigate<HubViewModel>().ConfigureAwait(false);
                     break;
                 case PasswordChangeResult.OldPasswordIncorrect:
