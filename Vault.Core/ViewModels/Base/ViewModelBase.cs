@@ -2,6 +2,8 @@
 using MvvmCross.Navigation;
 using MvvmCross.ViewModels;
 using Serilog;
+using Realms;
+using Vault.Core.Model.DbContext;
 
 namespace Vault.Core.ViewModels.Base
 {
@@ -9,11 +11,16 @@ namespace Vault.Core.ViewModels.Base
     {
         public string this[string index] => AppStrings.ResourceManager.GetString(index);
         public IMvxNavigationService NavigationService { get; }
+        public Realm RealmInstance { get; }
+        public Preferences UserPreferences { get; }
 
         protected ViewModelBase(IMvxNavigationService navigationService)
         {
             NavigationService = navigationService;
             Log.Verbose("Navigated to " + GetType().Name);
+
+            RealmInstance = RealmHelpers.GetRealmInstance();
+            UserPreferences = RealmHelpers.GetPreferences(RealmInstance);
         }
     }
 
@@ -21,11 +28,16 @@ namespace Vault.Core.ViewModels.Base
     {
         public string this[string index] => AppStrings.ResourceManager.GetString(index);
         public IMvxNavigationService NavigationService { get; }
+        public Realm RealmInstance { get; }
+        public Preferences UserPreferences { get; }
 
         protected ViewModelBase(IMvxNavigationService navigationService)
         {
             NavigationService = navigationService;
             Log.Verbose("Navigated to " + GetType().Name);
+
+            RealmInstance = RealmHelpers.GetRealmInstance();
+            UserPreferences = RealmHelpers.GetPreferences(RealmInstance);
         }
     }
 }

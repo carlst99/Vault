@@ -1,7 +1,6 @@
 ﻿using MvvmCross.Commands;
 using MvvmCross.Navigation;
 using MvvmCross.Plugin.Messenger;
-using Realms;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -128,15 +127,14 @@ namespace Vault.Core.ViewModels
         {
             Media toRemove = SelectedImage;
             SelectedImage = null;
+            Images.Remove(toRemove);
             await _importService.TryRemoveMediaAsync(toRemove).ConfigureAwait(true);
-            UpdateImageList();
             await RaisePropertyChanged(nameof(ImageCount)).ConfigureAwait(true);
         }
 
         private async void UpdateImageList()
         {
-            Realm realm = RealmHelpers.GetRealmInstance();
-            IEnumerable<Media> diff = realm.All<Media>().Where(m => m.TypeRaw == (int)MediaType.Image).ToList();
+            IEnumerable<Media> diff = RealmInstance.All<Media>().Where(m => m.TypeRaw == (int)MediaType.Image).ToList();
             diff = diff.Except(Images);
 
             foreach (Media element in diff)

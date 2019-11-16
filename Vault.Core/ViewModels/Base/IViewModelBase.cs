@@ -1,4 +1,6 @@
 ﻿using MvvmCross.Navigation;
+using Realms;
+using Vault.Core.Model.DbContext;
 
 namespace Vault.Core.ViewModels.Base
 {
@@ -6,5 +8,7 @@ namespace Vault.Core.ViewModels.Base
     {
         string this[string index] { get; }
         IMvxNavigationService NavigationService { get; }
+        Realm RealmInstance { get; }
+        Preferences UserPreferences { get; }
     }
 }

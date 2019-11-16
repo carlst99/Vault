@@ -1,6 +1,5 @@
 ﻿using MvvmCross.Commands;
 using MvvmCross.Navigation;
-using Realms;
 using System.Collections.Generic;
 using System.Linq;
 using Vault.Core.Model.DbContext;
@@ -40,8 +39,7 @@ namespace Vault.Core.ViewModels
         public ImageFullScreenViewModel(IMvxNavigationService navigationService)
             : base(navigationService)
         {
-            Realm realm = RealmHelpers.GetRealmInstance();
-            _images = realm.All<Media>().Where(m => m.TypeRaw == (int)MediaType.Image).ToList();
+            _images = RealmInstance.All<Media>().Where(m => m.TypeRaw == (int)MediaType.Image).ToList();
             SelectedImage = _images[_selectedImageIndex];
         }
 
