@@ -30,7 +30,7 @@ namespace Vault.Core.ViewModels.Base
             UserPreferences = RealmHelpers.GetUserPreferences(RealmInstance);
             Messenger = messenger;
 
-            _mediaUpdatedMessageSubToken = messenger.Subscribe<MediaUpdatedMessage>(OnMediaUpdatedMessage);
+            _mediaUpdatedMessageSubToken = messenger.SubscribeOnMainThread<MediaUpdatedMessage>(OnMediaUpdatedMessage);
         }
 
         protected virtual void OnMediaUpdatedMessage(MediaUpdatedMessage media)
@@ -59,7 +59,7 @@ namespace Vault.Core.ViewModels.Base
             UserPreferences = RealmHelpers.GetUserPreferences(RealmInstance);
             Messenger = messenger;
 
-            _mediaUpdatedMessageSubToken = messenger.Subscribe<MediaUpdatedMessage>(OnMediaUpdatedMessage);
+            _mediaUpdatedMessageSubToken = messenger.SubscribeOnMainThread<MediaUpdatedMessage>(OnMediaUpdatedMessage);
         }
 
         protected virtual void OnMediaUpdatedMessage(MediaUpdatedMessage media)

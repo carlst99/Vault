@@ -176,5 +176,28 @@ namespace Vault.Core.ViewModels
 
             await RaisePropertyChanged(nameof(ImageCount)).ConfigureAwait(false);
         }
+
+        protected override void OnMediaUpdatedMessage(MediaUpdatedMessage message)
+        {
+            if (message.UpdatedMedia.Type != MediaType.Image)
+                return;
+
+            switch (message.Type)
+            {
+                case MediaUpdatedMessage.UpdateType.Added:
+                    UpdateImageList();
+                    break;
+                case MediaUpdatedMessage.UpdateType.Removed:
+                    if (SelectedImage == message.UpdatedMedia)
+                        SelectedImage = null;
+                    Images.Remove(message.UpdatedMedia);
+                    RaisePropertyChanged(nameof(ImageCount));
+                    break;
+                case MediaUpdatedMessage.UpdateType.Updated:
+                    Images.Remove(message.UpdatedMedia);
+                    UpdateImageList();
+                    break;
+            }
+        }
     }
 }

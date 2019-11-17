@@ -113,8 +113,7 @@
                         Command="{Binding RemoveImageCommand}"
                         Content="{md:PackIcon Kind=Delete}"
                         Focusable="False"
-                        Style="{StaticResource MaterialDesignIconButton}"
-                        Visibility="Hidden"/>
+                        Style="{StaticResource MaterialDesignIconButton}"/>
                 <Button Margin="8"
                         Command="{Binding RotateImageCCWCommand}"
                         Content="{md:PackIcon Kind=ArrowRotateLeft}"

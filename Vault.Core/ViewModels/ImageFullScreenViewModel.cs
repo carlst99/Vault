@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Vault.Core.Model.DbContext;
+using Vault.Core.Model.Messages;
 using Vault.Core.Services;
 
 namespace Vault.Core.ViewModels
@@ -96,6 +97,7 @@ namespace Vault.Core.ViewModels
             Media toRemove = SelectedImage;
             OnCycleImage(false);
             _images.Remove(toRemove);
+            Messenger.Publish(new MediaUpdatedMessage(this, toRemove, MediaUpdatedMessage.UpdateType.Removed));
             await _importService.TryRemoveMediaAsync(toRemove).ConfigureAwait(true);
             CanEditImage = true;
         }
@@ -126,6 +128,7 @@ namespace Vault.Core.ViewModels
                 }
             }).ConfigureAwait(false);
             await RaisePropertyChanged(nameof(SelectedImage)).ConfigureAwait(false);
+            Messenger.Publish(new MediaUpdatedMessage(this, SelectedImage, MediaUpdatedMessage.UpdateType.Updated));
             CanEditImage = true;
         }
 
