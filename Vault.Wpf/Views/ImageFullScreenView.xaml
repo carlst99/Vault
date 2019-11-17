@@ -88,18 +88,36 @@
               VerticalAlignment="Stretch"
               Background="{StaticResource MaterialDesignPaper}"
               Opacity="0.8">
+            <!-- Close button -->
             <Button Margin="8"
                     VerticalAlignment="Center"
                     Command="{Binding CycleImageRightCommand}"
                     Content="{md:PackIcon Kind=ArrowRightCircle}"
                     Focusable="False"
                     Style="{StaticResource MaterialDesignIconButton}"/>
+
+            <!-- Cycle right button -->
             <Button Margin="8"
                     VerticalAlignment="Top"
                     Click="Button_Click"
                     Content="{md:PackIcon Kind=CloseCircle}"
                     Focusable="False"
                     Style="{StaticResource MaterialDesignIconButton}"/>
+
+            <!-- Delete and rotate buttons -->
+            <StackPanel VerticalAlignment="Bottom">
+                <!-- Hidden due to Realm issues -->
+                <Button Margin="8"
+                        Command="{Binding RemoveImageCommand}"
+                        Content="{md:PackIcon Kind=Delete}"
+                        Focusable="False"
+                        Style="{StaticResource MaterialDesignIconButton}"
+                        Visibility="Hidden"/>
+                <Button Margin="8"
+                        Content="{md:PackIcon Kind=ArrowRotateRight}"
+                        Focusable="False"
+                        Style="{StaticResource MaterialDesignIconButton}"/>
+            </StackPanel>
 
             <Grid.Triggers>
                 <EventTrigger RoutedEvent="MouseEnter">

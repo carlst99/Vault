@@ -3,6 +3,7 @@ using MvvmCross.Navigation;
 using System.Collections.Generic;
 using System.Linq;
 using Vault.Core.Model.DbContext;
+using Vault.Core.Services;
 
 namespace Vault.Core.ViewModels
 {
@@ -10,6 +11,7 @@ namespace Vault.Core.ViewModels
     {
         #region Fields
 
+        private readonly IImportService _importService;
         private readonly List<Media> _images;
         private Media _selectedImage;
         private int _selectedImageIndex;
@@ -20,6 +22,8 @@ namespace Vault.Core.ViewModels
 
         public IMvxCommand CycleImageLeftCommand => new MvxCommand(() => OnCycleImage(true));
         public IMvxCommand CycleImageRightCommand => new MvxCommand(() => OnCycleImage(false));
+        public IMvxCommand RemoveImageCommand => new MvxCommand(OnRemoveImage);
+        public IMvxCommand RotateImageCommand => new MvxCommand(OnRotateImage);
 
         #endregion
 
@@ -36,9 +40,10 @@ namespace Vault.Core.ViewModels
 
         #endregion
 
-        public ImageFullScreenViewModel(IMvxNavigationService navigationService)
+        public ImageFullScreenViewModel(IMvxNavigationService navigationService, IImportService importService)
             : base(navigationService)
         {
+            _importService = importService;
             _images = RealmInstance.All<Media>().Where(m => m.TypeRaw == (int)MediaType.Image).ToList();
             SelectedImage = _images[_selectedImageIndex];
         }
@@ -59,6 +64,19 @@ namespace Vault.Core.ViewModels
             }
 
             SelectedImage = _images[_selectedImageIndex];
+        }
+
+        private async void OnRemoveImage()
+        {
+            Media toRemove = SelectedImage;
+            OnCycleImage(false);
+            _images.Remove(toRemove);
+            await _importService.TryRemoveMediaAsync(toRemove).ConfigureAwait(true);
+        }
+
+        private void OnRotateImage()
+        {
+
         }
 
         public override void Prepare(Media parameter)
