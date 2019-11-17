@@ -1,5 +1,6 @@
 ﻿using MvvmCross.Commands;
 using MvvmCross.Navigation;
+using MvvmCross.Plugin.Messenger;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Processing;
@@ -60,9 +61,10 @@ namespace Vault.Core.ViewModels
 
         public ImageFullScreenViewModel(
             IMvxNavigationService navigationService,
+            IMvxMessenger messenger,
             IImportService importService,
             IMediaLoaderService mediaLoaderService)
-            : base(navigationService)
+            : base(navigationService, messenger)
         {
             _importService = importService;
             _mediaLoaderService = mediaLoaderService;

@@ -12,7 +12,6 @@ namespace Vault.Core.ViewModels
         #region Fields
 
         private readonly IPasswordService _passwordService;
-        private readonly IMvxMessenger _messenger;
 
         private string _password;
         private string _verifyPassword;
@@ -67,11 +66,13 @@ namespace Vault.Core.ViewModels
 
         #endregion
 
-        public SetupViewModel(IMvxNavigationService navigationService, IPasswordService passwordService, IMvxMessenger messenger)
-            : base(navigationService)
+        public SetupViewModel(
+            IMvxNavigationService navigationService,
+            IMvxMessenger messenger,
+            IPasswordService passwordService)
+            : base(navigationService, messenger)
         {
             _passwordService = passwordService;
-            _messenger = messenger;
         }
 
         private async void OnChangePassword()
@@ -90,7 +91,7 @@ namespace Vault.Core.ViewModels
                     await NavigationService.Navigate<HubViewModel>().ConfigureAwait(false);
                     break;
                 case PasswordChangeResult.OldPasswordIncorrect:
-                    _messenger.Publish(
+                    Messenger.Publish(
                         new DialogMessage(
                             this,
                             "Incorrect Password!", "You've entered the wrong old password. Please check the Caps Lock status of your computer and try again",
@@ -98,7 +99,7 @@ namespace Vault.Core.ViewModels
                     OldPassword = string.Empty;
                     break;
                 case PasswordChangeResult.Failure:
-                    _messenger.Publish(
+                    Messenger.Publish(
                         new DialogMessage(
                             this,
                             "Oops!", "Sorry, changing your password failed. Please try again.",

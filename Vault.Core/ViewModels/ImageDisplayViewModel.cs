@@ -15,7 +15,6 @@ namespace Vault.Core.ViewModels
     {
         #region Fields
 
-        private readonly IMvxMessenger _messenger;
         private readonly IImportService _importService;
         private readonly IMediaLoaderService _mediaLoaderService;
 
@@ -76,9 +75,8 @@ namespace Vault.Core.ViewModels
             IMvxMessenger messenger,
             IImportService importService,
             IMediaLoaderService mediaLoaderService)
-            : base(navigationService)
+            : base(navigationService, messenger)
         {
-            _messenger = messenger;
             _importService = importService;
             _mediaLoaderService = mediaLoaderService;
 
@@ -90,7 +88,7 @@ namespace Vault.Core.ViewModels
         {
             IsImportInProgress = true;
 
-            _messenger.Publish(new OpenFileDialogMessage(
+            Messenger.Publish(new OpenFileDialogMessage(
                 this,
                 "Select images to import",
                 OpenFileDialogMessage.DefaultImageFilters)
@@ -121,13 +119,13 @@ namespace Vault.Core.ViewModels
         {
             if (SelectedImage == null)
             {
-                _messenger.Publish(new DialogMessage(this, "Woah!", "Please select an image to export", DialogMessage.DialogMessageType.Info));
+                Messenger.Publish(new DialogMessage(this, "Woah!", "Please select an image to export", DialogMessage.DialogMessageType.Info));
                 return;
             }
 
             IsImportInProgress = true;
 
-            _messenger.Publish(new SaveFileDialogMessage(
+            Messenger.Publish(new SaveFileDialogMessage(
                 this,
                 "Image Export",
                 SelectedImage.Name,

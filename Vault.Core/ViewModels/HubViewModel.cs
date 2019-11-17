@@ -1,5 +1,6 @@
 ﻿using MvvmCross.Commands;
 using MvvmCross.Navigation;
+using MvvmCross.Plugin.Messenger;
 using MvvmCrossExtensions.Wpf.Presenters.MasterDetail;
 using System;
 using System.Collections.Generic;
@@ -49,8 +50,8 @@ namespace Vault.Core.ViewModels
 
         #endregion
 
-        public HubViewModel(IMvxNavigationService navigationService)
-            : base(navigationService)
+        public HubViewModel(IMvxNavigationService navigationService, IMvxMessenger messenger)
+            : base(navigationService, messenger)
         {
             NavigationItems = new List<Tuple<Type, string>>()
             {

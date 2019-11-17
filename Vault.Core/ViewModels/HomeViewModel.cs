@@ -1,5 +1,6 @@
 ﻿using MvvmCross.Commands;
 using MvvmCross.Navigation;
+using MvvmCross.Plugin.Messenger;
 #if !DEBUG
 using MvvmCross.Plugin.Messenger;
 using Vault.Core.Model.DbContext;
@@ -15,7 +16,6 @@ namespace Vault.Core.ViewModels
 
 #if !DEBUG
         private readonly IPasswordService _passwordService;
-        private readonly IMvxMessenger _messenger;
 #endif
 
         private string _password;
@@ -42,16 +42,15 @@ namespace Vault.Core.ViewModels
         #endregion
 
 #if DEBUG
-        public HomeViewModel(IMvxNavigationService navigationService)
-            : base(navigationService)
+        public HomeViewModel(IMvxNavigationService navigationService, IMvxMessenger messenger)
+            : base(navigationService, messenger)
         {
         }
 #else
-        public HomeViewModel(IMvxNavigationService navigationService, IPasswordService passwordService, IMvxMessenger messenger)
-            : base(navigationService)
+        public HomeViewModel(IMvxNavigationService navigationService, IMvxMessenger messenger, IPasswordService passwordService)
+            : base(navigationService, messenger)
         {
             _passwordService = passwordService;
-            _messenger = messenger;
         }
 #endif
 
@@ -71,7 +70,7 @@ namespace Vault.Core.ViewModels
             }
             else
             {
-                _messenger.Publish(
+                Messenger.Publish(
                     new DialogMessage(
                         this,
                         "Incorrect Password!", "That's the wrong password. Please check the Caps Lock status of your computer and try again",
