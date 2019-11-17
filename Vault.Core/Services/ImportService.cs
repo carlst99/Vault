@@ -84,14 +84,13 @@ namespace Vault.Core.Services
                             scalar = MAX_THUMB_SIZE / image.Width;
 
                         // Save the image as a PNG
-                        PngEncoder pngEncoder = new PngEncoder();
-                        image.Save(imageStore, pngEncoder);
+                        image.SaveAsPng(imageStore);
                         imageStore.Position = 0;
                         encryptor.EncryptAsync(imageStore, imageOutput);
 
                         // Mutate and encrypt the thumbnail
                         image.Mutate(x => x.Resize((int)(image.Width * scalar), (int)(image.Height * scalar)));
-                        image.Save(thumbStore, pngEncoder);
+                        image.SaveAsPng(thumbStore);
                         thumbStore.Position = 0;
                         encryptor.EncryptAsync(thumbStore, thumbOutput).Wait();
                     }

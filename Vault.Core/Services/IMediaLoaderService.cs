@@ -7,5 +7,6 @@ namespace Vault.Core.Services
     {
         Task<Stream> LoadImageAsync(string path);
         Task<Stream> LoadVideoAsync(string path);
+        Task<bool> TryUpdateMediaAsync(string path, Stream stream);
     }
 }

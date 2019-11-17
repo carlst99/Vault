@@ -105,7 +105,8 @@
                     Style="{StaticResource MaterialDesignIconButton}"/>
 
             <!-- Delete and rotate buttons -->
-            <StackPanel VerticalAlignment="Bottom">
+            <StackPanel VerticalAlignment="Bottom"
+                        IsEnabled="{Binding CanEditImage}">
                 <!-- Hidden due to Realm issues -->
                 <Button Margin="8"
                         Command="{Binding RemoveImageCommand}"
@@ -114,6 +115,7 @@
                         Style="{StaticResource MaterialDesignIconButton}"
                         Visibility="Hidden"/>
                 <Button Margin="8"
+                        Command="{Binding RotateImageCommand}"
                         Content="{md:PackIcon Kind=ArrowRotateRight}"
                         Focusable="False"
                         Style="{StaticResource MaterialDesignIconButton}"/>
