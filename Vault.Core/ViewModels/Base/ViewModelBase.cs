@@ -14,11 +14,24 @@ namespace Vault.Core.ViewModels.Base
 #pragma warning disable IDE0052 // Remove unread private members
         private readonly MvxSubscriptionToken _mediaUpdatedMessageSubToken;
 #pragma warning restore IDE0052 // Remove unread private members
+        private Realm _realmInstance;
+        private Preferences _userPreferences;
 
         public string this[string index] => AppStrings.ResourceManager.GetString(index);
         public IMvxNavigationService NavigationService { get; }
-        public Realm RealmInstance { get; set; }
-        public Preferences UserPreferences { get; set; }
+
+        public Realm RealmInstance
+        {
+            get => _realmInstance ?? (_realmInstance = RealmHelpers.GetRealmInstance());
+            set => _realmInstance = value;
+        }
+
+        public Preferences UserPreferences
+        {
+            get => _userPreferences ?? (_userPreferences = RealmHelpers.GetUserPreferences());
+            set => _userPreferences = value;
+        }
+
         public IMvxMessenger Messenger { get; }
 
         protected ViewModelBase(IMvxNavigationService navigationService, IMvxMessenger messenger)
@@ -26,8 +39,10 @@ namespace Vault.Core.ViewModels.Base
             NavigationService = navigationService;
             Log.Verbose("Navigated to " + GetType().Name);
 
+#if DEBUG
             RealmInstance = RealmHelpers.GetRealmInstance();
             UserPreferences = RealmHelpers.GetUserPreferences(RealmInstance);
+#endif
             Messenger = messenger;
 
             _mediaUpdatedMessageSubToken = messenger.SubscribeOnMainThread<MediaUpdatedMessage>(OnMediaUpdatedMessage);
@@ -43,11 +58,24 @@ namespace Vault.Core.ViewModels.Base
 #pragma warning disable IDE0052 // Remove unread private members
         private readonly MvxSubscriptionToken _mediaUpdatedMessageSubToken;
 #pragma warning restore IDE0052 // Remove unread private members
+        private Realm _realmInstance;
+        private Preferences _userPreferences;
 
         public string this[string index] => AppStrings.ResourceManager.GetString(index);
         public IMvxNavigationService NavigationService { get; }
-        public Realm RealmInstance { get; set; }
-        public Preferences UserPreferences { get; set; }
+
+        public Realm RealmInstance
+        {
+            get => _realmInstance ?? (_realmInstance = RealmHelpers.GetRealmInstance());
+            set => _realmInstance = value;
+        }
+
+        public Preferences UserPreferences
+        {
+            get => _userPreferences ?? (_userPreferences = RealmHelpers.GetUserPreferences());
+            set => _userPreferences = value;
+        }
+
         public IMvxMessenger Messenger { get; }
 
         protected ViewModelBase(IMvxNavigationService navigationService, IMvxMessenger messenger)
@@ -55,8 +83,10 @@ namespace Vault.Core.ViewModels.Base
             NavigationService = navigationService;
             Log.Verbose("Navigated to " + GetType().Name);
 
+#if DEBUG
             RealmInstance = RealmHelpers.GetRealmInstance();
             UserPreferences = RealmHelpers.GetUserPreferences(RealmInstance);
+#endif
             Messenger = messenger;
 
             _mediaUpdatedMessageSubToken = messenger.SubscribeOnMainThread<MediaUpdatedMessage>(OnMediaUpdatedMessage);
