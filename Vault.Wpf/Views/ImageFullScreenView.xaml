@@ -94,6 +94,7 @@
                     Command="{Binding CycleImageRightCommand}"
                     Content="{md:PackIcon Kind=ArrowRightCircle}"
                     Focusable="False"
+                    IsEnabled="{Binding CanEditImage}"
                     Style="{StaticResource MaterialDesignIconButton}"/>
 
             <!-- Cycle right button -->
@@ -115,7 +116,12 @@
                         Style="{StaticResource MaterialDesignIconButton}"
                         Visibility="Hidden"/>
                 <Button Margin="8"
-                        Command="{Binding RotateImageCommand}"
+                        Command="{Binding RotateImageCCWCommand}"
+                        Content="{md:PackIcon Kind=ArrowRotateLeft}"
+                        Focusable="False"
+                        Style="{StaticResource MaterialDesignIconButton}"/>
+                <Button Margin="8"
+                        Command="{Binding RotateImageCWCommand}"
                         Content="{md:PackIcon Kind=ArrowRotateRight}"
                         Focusable="False"
                         Style="{StaticResource MaterialDesignIconButton}"/>

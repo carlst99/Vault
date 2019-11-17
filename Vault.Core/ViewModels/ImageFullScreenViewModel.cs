@@ -31,7 +31,8 @@ namespace Vault.Core.ViewModels
         public IMvxCommand CycleImageLeftCommand => new MvxCommand(() => OnCycleImage(true));
         public IMvxCommand CycleImageRightCommand => new MvxCommand(() => OnCycleImage(false));
         public IMvxCommand RemoveImageCommand => new MvxCommand(OnRemoveImage);
-        public IMvxCommand RotateImageCommand => new MvxCommand(OnRotateImage);
+        public IMvxCommand RotateImageCWCommand => new MvxCommand(() => OnRotateImage(RotateMode.Rotate90));
+        public IMvxCommand RotateImageCCWCommand => new MvxCommand(() => OnRotateImage(RotateMode.Rotate270));
 
         #endregion
 
@@ -97,7 +98,7 @@ namespace Vault.Core.ViewModels
             CanEditImage = true;
         }
 
-        private async void OnRotateImage()
+        private async void OnRotateImage(RotateMode rotateMode)
         {
             CanEditImage = false;
             string imagePath = SelectedImage.FilePath;
@@ -108,7 +109,7 @@ namespace Vault.Core.ViewModels
                 using (Image image = Image.Load(_mediaLoaderService.LoadImageAsync(imagePath).Result))
                 using (MemoryStream rotatedImage = new MemoryStream())
                 {
-                    image.Mutate(i => i.Rotate(RotateMode.Rotate90));
+                    image.Mutate(i => i.Rotate(rotateMode));
                     image.SaveAsPng(rotatedImage);
                     _mediaLoaderService.TryUpdateMediaAsync(imagePath, rotatedImage).Wait();
                 }
@@ -117,7 +118,7 @@ namespace Vault.Core.ViewModels
                 using (Image image = Image.Load(_mediaLoaderService.LoadImageAsync(thumbPath).Result))
                 using (MemoryStream rotatedImage = new MemoryStream())
                 {
-                    image.Mutate(i => i.Rotate(RotateMode.Rotate90));
+                    image.Mutate(i => i.Rotate(rotateMode));
                     image.SaveAsPng(rotatedImage);
                     _mediaLoaderService.TryUpdateMediaAsync(thumbPath, rotatedImage).Wait();
                 }
