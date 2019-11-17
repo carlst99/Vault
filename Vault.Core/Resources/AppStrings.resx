@@ -161,4 +161,8 @@
     <value>Images</value>
     <comment>This label says images</comment>
   </data>
+  <data name="ToolTip_ThumbnailSlider" xml:space="preserve">
+    <value>Adjust thumbnail size</value>
+    <comment>This tooltip is used on the thumbnail size adjustment slider</comment>
+  </data>
 </root>

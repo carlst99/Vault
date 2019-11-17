@@ -48,7 +48,8 @@
         <Grid x:Name="GrdImageCycleLeft"
               HorizontalAlignment="Left"
               VerticalAlignment="Stretch"
-              Background="#66FFFFFF">
+              Background="{StaticResource MaterialDesignPaper}"
+              Opacity="0.8">
             <Button Margin="8"
                     VerticalAlignment="Center"
                     Command="{Binding CycleImageLeftCommand}"
@@ -63,7 +64,7 @@
                             <DoubleAnimation Storyboard.Target="{Binding ElementName=GrdImageCycleLeft}"
                                              Storyboard.TargetProperty="Opacity"
                                              From="0"
-                                             To="1"
+                                             To="0.8"
                                              Duration="0:0:0.2"/>
                         </Storyboard>
                     </BeginStoryboard>
@@ -73,7 +74,7 @@
                         <Storyboard>
                             <DoubleAnimation Storyboard.Target="{Binding ElementName=GrdImageCycleLeft}"
                                              Storyboard.TargetProperty="Opacity"
-                                             From="1"
+                                             From="0.8"
                                              To="0"
                                              Duration="0:0:0.2"/>
                         </Storyboard>
@@ -85,19 +86,45 @@
         <Grid x:Name="GrdImageCycleRight"
               HorizontalAlignment="Right"
               VerticalAlignment="Stretch"
-              Background="#66FFFFFF">
+              Background="{StaticResource MaterialDesignPaper}"
+              Opacity="0.8">
+            <!-- Close button -->
             <Button Margin="8"
                     VerticalAlignment="Center"
                     Command="{Binding CycleImageRightCommand}"
                     Content="{md:PackIcon Kind=ArrowRightCircle}"
                     Focusable="False"
+                    IsEnabled="{Binding CanEditImage}"
                     Style="{StaticResource MaterialDesignIconButton}"/>
+
+            <!-- Cycle right button -->
             <Button Margin="8"
                     VerticalAlignment="Top"
                     Click="Button_Click"
                     Content="{md:PackIcon Kind=CloseCircle}"
                     Focusable="False"
                     Style="{StaticResource MaterialDesignIconButton}"/>
+
+            <!-- Delete and rotate buttons -->
+            <StackPanel VerticalAlignment="Bottom"
+                        IsEnabled="{Binding CanEditImage}">
+                <!-- Hidden due to Realm issues -->
+                <Button Margin="8"
+                        Command="{Binding RemoveImageCommand}"
+                        Content="{md:PackIcon Kind=Delete}"
+                        Focusable="False"
+                        Style="{StaticResource MaterialDesignIconButton}"/>
+                <Button Margin="8"
+                        Command="{Binding RotateImageCCWCommand}"
+                        Content="{md:PackIcon Kind=ArrowRotateLeft}"
+                        Focusable="False"
+                        Style="{StaticResource MaterialDesignIconButton}"/>
+                <Button Margin="8"
+                        Command="{Binding RotateImageCWCommand}"
+                        Content="{md:PackIcon Kind=ArrowRotateRight}"
+                        Focusable="False"
+                        Style="{StaticResource MaterialDesignIconButton}"/>
+            </StackPanel>
 
             <Grid.Triggers>
                 <EventTrigger RoutedEvent="MouseEnter">
@@ -106,7 +133,7 @@
                             <DoubleAnimation Storyboard.Target="{Binding ElementName=GrdImageCycleRight}"
                                              Storyboard.TargetProperty="Opacity"
                                              From="0"
-                                             To="1"
+                                             To="0.8"
                                              Duration="0:0:0.2"/>
                         </Storyboard>
                     </BeginStoryboard>
@@ -116,7 +143,7 @@
                         <Storyboard>
                             <DoubleAnimation Storyboard.Target="{Binding ElementName=GrdImageCycleRight}"
                                              Storyboard.TargetProperty="Opacity"
-                                             From="1"
+                                             From="0.8"
                                              To="0"
                                              Duration="0:0:0.2"/>
                         </Storyboard>
@@ -132,13 +159,13 @@
                         <DoubleAnimation BeginTime="0:0:0.5"
                                          Storyboard.Target="{Binding ElementName=GrdImageCycleLeft}"
                                          Storyboard.TargetProperty="Opacity"
-                                         From="1"
+                                         From="0.8"
                                          To="0"
                                          Duration="0:0:1"/>
                         <DoubleAnimation BeginTime="0:0:0.5"
                                          Storyboard.Target="{Binding ElementName=GrdImageCycleRight}"
                                          Storyboard.TargetProperty="Opacity"
-                                         From="1"
+                                         From="0.8"
                                          To="0"
                                          Duration="0:0:1"/>
                     </Storyboard>

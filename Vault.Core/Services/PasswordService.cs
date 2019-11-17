@@ -7,8 +7,6 @@ namespace Vault.Core.Services
 {
     public class PasswordService : IPasswordService
     {
-        
-
         public async Task<PasswordChangeResult> TryChangePasswordAsync(string oldPassword, string newPassword)
         {
             if (!File.Exists(App.HASH_FILE_LOCATION)) // No password in storage, need to set new one

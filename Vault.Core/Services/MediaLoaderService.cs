@@ -23,6 +23,7 @@ namespace Vault.Core.Services
                     try
                     {
                         await EncryptorAssistant.GetEncryptor().DecryptAsync(fs, imageStream).ConfigureAwait(true);
+                        imageStream.Position = 0;
                     }
                     catch (Exception ex)
                     {
@@ -41,6 +42,24 @@ namespace Vault.Core.Services
         public async Task<Stream> LoadVideoAsync(string path)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<bool> TryUpdateMediaAsync(string path, Stream stream)
+        {
+            using (FileStream fs = new FileStream(path, FileMode.Create, FileAccess.ReadWrite))
+            {
+                try
+                {
+                    stream.Position = 0;
+                    await EncryptorAssistant.GetEncryptor().EncryptAsync(stream, fs).ConfigureAwait(false);
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    App.LogError("Could not update media", ex);
+                    return false;
+                }
+            }
         }
     }
 }

@@ -32,13 +32,17 @@ namespace Vault.Wpf.Views
             switch (e.Key)
             {
                 case Key.Escape:
-                    Close();
+                    if (model.CanEditImage)
+                        Close();
                     break;
                 case Key.Left:
                     model.CycleImageLeftCommand.Execute();
                     break;
                 case Key.Right:
                     model.CycleImageRightCommand.Execute();
+                    break;
+                case Key.System:
+                    e.Handled = true;
                     break;
             }
         }

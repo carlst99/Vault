@@ -1,9 +1,16 @@
 ﻿using MvvmCross.Commands;
 using MvvmCross.Navigation;
-using Realms;
+using MvvmCross.Plugin.Messenger;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.Processing;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Vault.Core.Model.DbContext;
+using Vault.Core.Model.Messages;
+using Vault.Core.Services;
 
 namespace Vault.Core.ViewModels
 {
@@ -11,9 +18,13 @@ namespace Vault.Core.ViewModels
     {
         #region Fields
 
+        private readonly IImportService _importService;
+        private readonly IMediaLoaderService _mediaLoaderService;
+
         private readonly List<Media> _images;
         private Media _selectedImage;
         private int _selectedImageIndex;
+        private bool _canEditImage = true;
 
         #endregion
 
@@ -21,6 +32,9 @@ namespace Vault.Core.ViewModels
 
         public IMvxCommand CycleImageLeftCommand => new MvxCommand(() => OnCycleImage(true));
         public IMvxCommand CycleImageRightCommand => new MvxCommand(() => OnCycleImage(false));
+        public IMvxCommand RemoveImageCommand => new MvxCommand(OnRemoveImage);
+        public IMvxCommand RotateImageCWCommand => new MvxCommand(() => OnRotateImage(RotateMode.Rotate90));
+        public IMvxCommand RotateImageCCWCommand => new MvxCommand(() => OnRotateImage(RotateMode.Rotate270));
 
         #endregion
 
@@ -35,13 +49,27 @@ namespace Vault.Core.ViewModels
             set => SetProperty(ref _selectedImage, value);
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether or not the selected image can be edited
+        /// </summary>
+        public bool CanEditImage
+        {
+            get => _canEditImage;
+            set => SetProperty(ref _canEditImage, value);
+        }
+
         #endregion
 
-        public ImageFullScreenViewModel(IMvxNavigationService navigationService)
-            : base(navigationService)
+        public ImageFullScreenViewModel(
+            IMvxNavigationService navigationService,
+            IMvxMessenger messenger,
+            IImportService importService,
+            IMediaLoaderService mediaLoaderService)
+            : base(navigationService, messenger)
         {
-            Realm realm = RealmHelpers.GetRealmInstance();
-            _images = realm.All<Media>().Where(m => m.TypeRaw == (int)MediaType.Image).ToList();
+            _importService = importService;
+            _mediaLoaderService = mediaLoaderService;
+            _images = RealmInstance.All<Media>().Where(m => m.TypeRaw == (int)MediaType.Image).ToList();
             SelectedImage = _images[_selectedImageIndex];
         }
 
@@ -61,6 +89,47 @@ namespace Vault.Core.ViewModels
             }
 
             SelectedImage = _images[_selectedImageIndex];
+        }
+
+        private async void OnRemoveImage()
+        {
+            CanEditImage = false;
+            Media toRemove = SelectedImage;
+            OnCycleImage(false);
+            _images.Remove(toRemove);
+            Messenger.Publish(new MediaUpdatedMessage(this, toRemove, MediaUpdatedMessage.UpdateType.Removed));
+            await _importService.TryRemoveMediaAsync(toRemove).ConfigureAwait(true);
+            CanEditImage = true;
+        }
+
+        private async void OnRotateImage(RotateMode rotateMode)
+        {
+            CanEditImage = false;
+            string imagePath = SelectedImage.FilePath;
+            string thumbPath = SelectedImage.ThumbPath;
+            await Task.Run(() =>
+            {
+                // Update image
+                using (Image image = Image.Load(_mediaLoaderService.LoadImageAsync(imagePath).Result))
+                using (MemoryStream rotatedImage = new MemoryStream())
+                {
+                    image.Mutate(i => i.Rotate(rotateMode));
+                    image.SaveAsPng(rotatedImage);
+                    _mediaLoaderService.TryUpdateMediaAsync(imagePath, rotatedImage).Wait();
+                }
+
+                // Update thumb
+                using (Image image = Image.Load(_mediaLoaderService.LoadImageAsync(thumbPath).Result))
+                using (MemoryStream rotatedImage = new MemoryStream())
+                {
+                    image.Mutate(i => i.Rotate(rotateMode));
+                    image.SaveAsPng(rotatedImage);
+                    _mediaLoaderService.TryUpdateMediaAsync(thumbPath, rotatedImage).Wait();
+                }
+            }).ConfigureAwait(false);
+            await RaisePropertyChanged(nameof(SelectedImage)).ConfigureAwait(false);
+            Messenger.Publish(new MediaUpdatedMessage(this, SelectedImage, MediaUpdatedMessage.UpdateType.Updated));
+            CanEditImage = true;
         }
 
         public override void Prepare(Media parameter)

@@ -30,22 +30,23 @@
                            VerticalAlignment="Center"
                            FontWeight="Bold"
                            Text="{Binding [Label_DarkMode], Mode=OneTime}"/>
-                <ToggleButton Margin="0,0,12,0"
-                              Checked="ToggleButton_Checked"
+                <ToggleButton x:Name="TglBtnDarkMode"
+                              Margin="0,0,12,0"
+                              Checked="EnableDarkMode"
                               Style="{StaticResource MaterialDesignSwitchAccentToggleButton}"
-                              Unchecked="ToggleButton_Unchecked"/>
+                              Unchecked="DisableDarkMode"/>
 
                 <ScrollViewer HorizontalScrollBarVisibility="Auto"
                               VerticalScrollBarVisibility="Disabled">
                     <TabControl x:Name="TbCtrlNavigation"
                                 mde:TabControlAssist.TabHeaderHorizontalAlignment="Stretch"
                                 ItemsSource="{Binding NavigationItems}"
-                                SelectedIndex="{Binding SelectedPageIndex}"
+                                SelectedItem="{Binding SelectedPage}"
                                 Style="{StaticResource MaterialDesignAppBarTabControl}">
 
                         <TabControl.ItemTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Value}"/>
+                                <TextBlock Text="{Binding Item2}"/>
                             </DataTemplate>
                         </TabControl.ItemTemplate>
 
@@ -55,8 +56,7 @@
 
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="SelectionChanged">
-                                <i:InvokeCommandAction Command="{Binding OnNavigationRequestedCommand}"
-                                                       CommandParameter="{Binding ElementName=TbCtrlNavigation, Path=SelectedItem.Key}"/>
+                                <i:InvokeCommandAction Command="{Binding OnNavigationRequestedCommand}"/>
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
                     </TabControl>

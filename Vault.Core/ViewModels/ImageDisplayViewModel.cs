@@ -1,7 +1,6 @@
 ﻿using MvvmCross.Commands;
 using MvvmCross.Navigation;
 using MvvmCross.Plugin.Messenger;
-using Realms;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -16,7 +15,6 @@ namespace Vault.Core.ViewModels
     {
         #region Fields
 
-        private readonly IMvxMessenger _messenger;
         private readonly IImportService _importService;
         private readonly IMediaLoaderService _mediaLoaderService;
 
@@ -77,9 +75,8 @@ namespace Vault.Core.ViewModels
             IMvxMessenger messenger,
             IImportService importService,
             IMediaLoaderService mediaLoaderService)
-            : base(navigationService)
+            : base(navigationService, messenger)
         {
-            _messenger = messenger;
             _importService = importService;
             _mediaLoaderService = mediaLoaderService;
 
@@ -91,19 +88,18 @@ namespace Vault.Core.ViewModels
         {
             IsImportInProgress = true;
 
-            _messenger.Publish(new FileMessage(
+            Messenger.Publish(new OpenFileDialogMessage(
                 this,
                 "Select images to import",
-                FileMessage.DialogType.OpenFile,
-                FileMessage.DefaultImageFilters)
+                OpenFileDialogMessage.DefaultImageFilters)
             {
                 Callback = CompleteImport
             });
         }
 
-        private async void CompleteImport(FileMessage.DialogResult result, IEnumerable<string> imagePaths)
+        private async void CompleteImport(bool result, IEnumerable<string> imagePaths)
         {
-            if (result == FileMessage.DialogResult.Failed)
+            if (!result)
             {
                 IsImportInProgress = false;
                 return;
@@ -121,22 +117,48 @@ namespace Vault.Core.ViewModels
 
         private void ExportImage()
         {
-            throw new NotImplementedException();
+            if (SelectedImage == null)
+            {
+                Messenger.Publish(new DialogMessage(this, "Woah!", "Please select an image to export", DialogMessage.DialogMessageType.Info));
+                return;
+            }
+
+            IsImportInProgress = true;
+
+            Messenger.Publish(new SaveFileDialogMessage(
+                this,
+                "Image Export",
+                SelectedImage.Name,
+                ".png")
+            {
+                Callback = CompleteExport
+            });
+        }
+
+        private async void CompleteExport(bool result, string imagePath)
+        {
+            if (!result)
+            {
+                IsImportInProgress = false;
+                return;
+            }
+
+            await _importService.TryExportMediaAsync(SelectedImage, imagePath).ConfigureAwait(false);
+            IsImportInProgress = false;
         }
 
         private async void RemoveImage()
         {
             Media toRemove = SelectedImage;
             SelectedImage = null;
+            Images.Remove(toRemove);
             await _importService.TryRemoveMediaAsync(toRemove).ConfigureAwait(true);
-            UpdateImageList();
             await RaisePropertyChanged(nameof(ImageCount)).ConfigureAwait(true);
         }
 
         private async void UpdateImageList()
         {
-            Realm realm = RealmHelpers.GetRealmInstance();
-            IEnumerable<Media> diff = realm.All<Media>().Where(m => m.TypeRaw == (int)MediaType.Image).ToList();
+            IEnumerable<Media> diff = RealmInstance.All<Media>().Where(m => m.TypeRaw == (int)MediaType.Image).ToList();
             diff = diff.Except(Images);
 
             foreach (Media element in diff)
@@ -151,7 +173,31 @@ namespace Vault.Core.ViewModels
                     Images.Add(element);
                 }
             }
-            //Images = realm.All<Media>().Where(m => m.TypeRaw == (int)MediaType.Image).ToList();
+
+            await RaisePropertyChanged(nameof(ImageCount)).ConfigureAwait(false);
+        }
+
+        protected override void OnMediaUpdatedMessage(MediaUpdatedMessage message)
+        {
+            if (message.UpdatedMedia.Type != MediaType.Image)
+                return;
+
+            switch (message.Type)
+            {
+                case MediaUpdatedMessage.UpdateType.Added:
+                    UpdateImageList();
+                    break;
+                case MediaUpdatedMessage.UpdateType.Removed:
+                    if (SelectedImage == message.UpdatedMedia)
+                        SelectedImage = null;
+                    Images.Remove(message.UpdatedMedia);
+                    RaisePropertyChanged(nameof(ImageCount));
+                    break;
+                case MediaUpdatedMessage.UpdateType.Updated:
+                    Images.Remove(message.UpdatedMedia);
+                    UpdateImageList();
+                    break;
+            }
         }
     }
 }

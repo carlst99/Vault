@@ -1,6 +1,7 @@
 ﻿using Realms;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 #if !DEBUG
 using System.IO;
 using System.Security.Cryptography;
@@ -83,5 +84,23 @@ namespace Vault.Core.Model.DbContext
         }
 
         public static void ClearNextIds() => _currentIds.Clear();
+
+        public static Preferences GetUserPreferences(Realm instance = null)
+        {
+            if (instance == null)
+                instance = GetRealmInstance();
+            IQueryable<Preferences> preferences = instance.All<Preferences>();
+
+            if (preferences.Count() == 0)
+            {
+                Preferences p = new Preferences();
+                instance.Write(() => instance.Add(p));
+                return p;
+            }
+            else
+            {
+                return preferences.First();
+            }
+        }
     }
 }

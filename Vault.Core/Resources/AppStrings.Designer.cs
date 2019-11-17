@@ -158,5 +158,14 @@ namespace Vault.Core.Resources {
                 return ResourceManager.GetString("Label_Images", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Adjust thumbnail size.
+        /// </summary>
+        public static string ToolTip_ThumbnailSlider {
+            get {
+                return ResourceManager.GetString("ToolTip_ThumbnailSlider", resourceCulture);
+            }
+        }
     }
 }
