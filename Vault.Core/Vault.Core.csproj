@@ -2,8 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Description>Provides the structure for a MvvmCross Core project</Description>
+    <Description></Description>
     <Configurations>Debug;Release;Debug_Passwords</Configurations>
+    <Company>Vault</Company>
+    <PackageId>Vault.Core</PackageId>
+    <Product>Vault</Product>
+    <Authors>Carl Stephens</Authors>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
