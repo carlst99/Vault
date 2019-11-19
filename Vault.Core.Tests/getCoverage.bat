@@ -1,4 +1,3 @@
-dotnet build
-coverlet %~dp0/bin/Debug/netcoreapp2.1/Vault.Core.Tests.dll -t dotnet -a "test Vault.Core.Tests.csproj --no-build" -o coverage.xml -f opencover --exclude [xunit.*]*
+dotnet test /p:CollectCoverage=true /p:CoverletOutput=coverage.xml /p:CoverletOutputFormat=opencover /p:Exclude=\"[xunit.*]*,[bcrypt.net-next.*]*\"
 reportgenerator -reports:coverage.xml -targetdir:CoverageReport
 pause

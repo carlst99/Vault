@@ -2,8 +2,6 @@
 using Realms;
 using Serilog;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats;
-using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Processing;
 using StreamEncryptor.Predefined;
 using System;
