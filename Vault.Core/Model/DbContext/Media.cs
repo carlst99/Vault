@@ -79,15 +79,6 @@ namespace Vault.Core.Model.DbContext
             Type = type;
         }
 
-        public Media(MediaType type, string name, string filePath, string thumbPath = null)
-        {
-            Id = RealmHelpers.GetNextId<Media>();
-            Type = type;
-            Name = name;
-            FilePath = filePath;
-            ThumbPath = thumbPath;
-        }
-
         #endregion
 
         #region Object Overrides

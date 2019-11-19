@@ -132,7 +132,11 @@ namespace Vault.Core
             path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
 #endif
 
-            return Path.Combine(path, "Vault");
+            path = Path.Combine(path, "Vault");
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
+            return path;
         }
 
         /// <summary>

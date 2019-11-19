@@ -15,8 +15,15 @@ namespace Vault.Core.Tests
             Exception generated = App.CreateError<Exception>(message, false);
             Assert.IsType<Exception>(generated);
             Assert.Equal(message, generated.Message);
+        }
 
-            generated = App.LogError(message, exception, false);
+        [Fact]
+        public void TestLogError()
+        {
+            const string message = "test";
+            ArgumentException exception = new ArgumentException();
+
+            Exception generated = App.LogError(message, exception, false);
             Assert.IsType<ArgumentException>(generated);
         }
 
