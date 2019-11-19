@@ -54,4 +54,10 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="license.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
