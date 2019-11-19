@@ -8,7 +8,7 @@
     <authors>carlst99</authors>
     <description>A secure media manager</description>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <copyright>Copyright 2019</copyright>
+    <copyright>Copyright Carl Stephens 2019</copyright>
 	<iconUrl>https://github.com/carlst99/Vault/blob/master/Vault.Wpf/icon.ico</iconUrl>
     <dependencies />
   </metadata>
