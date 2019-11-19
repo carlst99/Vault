@@ -4,6 +4,8 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Description>Provides the structure for a MvvmCross Core project</Description>
     <Configurations>Debug;Release;Debug_Passwords</Configurations>
+    <Product>Vault</Product>
+    <Company />
   </PropertyGroup>
 
   <ItemGroup>
