@@ -344,7 +344,7 @@
       <Output TaskParameter="Assemblies" ItemName="myAssemblyInfo" />
     </GetAssemblyIdentity>
     <Exec Command="..\packages\NuGet.CommandLine.5.3.1\tools\NuGet.exe pack Vault.nuspec -Version %(myAssemblyInfo.Version) -Properties Configuration=Release -OutputDirectory $(OutDir) -BasePath $(OutDir)" />
-    <Exec Command="..\packages\squirrel.windows.1.9.1\tools\squirrel.exe --releasify $(OutDir)Vault.$([System.Version]::Parse(%(myAssemblyInfo.Version)).ToString(3)).nupkg" />
+    <Exec Command="..\packages\squirrel.windows.1.9.1\tools\squirrel.exe --releasify $(OutDir)Vault.$([System.Version]::Parse(%(myAssemblyInfo.Version)).ToString(3)).nupkg -g .\InstallLoadingScreen.gif" />
   </Target>
   <Import Project="..\packages\Fody.6.0.4\build\Fody.targets" Condition="Exists('..\packages\Fody.6.0.4\build\Fody.targets')" />
   <Import Project="..\packages\FodyHelpers.6.0.4\build\FodyHelpers.targets" Condition="Exists('..\packages\FodyHelpers.6.0.4\build\FodyHelpers.targets')" />

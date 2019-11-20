@@ -5,7 +5,7 @@
     <!-- version will be replaced by MSBuild -->
     <version>0.0.0.0</version>
     <title>Vault</title>
-    <authors>carlst99</authors>
+	<authors>Vault</authors>
     <description>A secure media manager</description>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <copyright>Copyright Carl Stephens 2019</copyright>
