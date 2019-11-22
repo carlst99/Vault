@@ -17,6 +17,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="license.txt" />
     <None Remove="Resources\ImageNotFound.png" />
   </ItemGroup>
 
@@ -60,12 +61,6 @@
     <Reference Include="MvvmCrossExtensions.Core">
       <HintPath>..\libraries\MvvmCrossExtensions.Core.dll</HintPath>
     </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="license.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>

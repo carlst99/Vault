@@ -1,16 +1,15 @@
 ﻿using MvvmCross;
 using MvvmCross.IoC;
+using MvvmCross.Plugin.Messenger;
 using MvvmCross.ViewModels;
-using Vault.Core.ViewModels;
 using Plugin.DeviceInfo;
-using Plugin.DeviceInfo.Abstractions;
 using Serilog;
 using Serilog.Events;
 using System;
 using System.IO;
-using System.Runtime.CompilerServices;
-using MvvmCross.Plugin.Messenger;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using Vault.Core.ViewModels;
 
 [assembly: InternalsVisibleTo("Vault.Core.Tests")]
 
