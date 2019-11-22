@@ -39,12 +39,6 @@ namespace Vault.Core.Model.Messages
         public string Content { get; set; }
 
         /// <summary>
-        /// Gets or sets the buttons to use in the message box
-        /// </summary>
-        [Obsolete]
-        public DialogButton Buttons { get; set; }
-
-        /// <summary>
         /// Gets or sets a callback, to be used when <see cref="DialogMessageType.Interaction"/> is requested
         /// </summary>
         public Action<DialogButton> Callback { get; set; }
