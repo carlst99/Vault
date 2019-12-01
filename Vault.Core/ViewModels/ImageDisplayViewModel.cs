@@ -1,7 +1,6 @@
 ﻿using MvvmCross.Commands;
 using MvvmCross.Navigation;
 using MvvmCross.Plugin.Messenger;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -147,13 +146,28 @@ namespace Vault.Core.ViewModels
             IsImportInProgress = false;
         }
 
-        private async void RemoveImage()
+        private void RemoveImage()
         {
-            Media toRemove = SelectedImage;
-            SelectedImage = null;
-            Images.Remove(toRemove);
-            await _importService.TryRemoveMediaAsync(toRemove).ConfigureAwait(true);
-            await RaisePropertyChanged(nameof(ImageCount)).ConfigureAwait(true);
+            async void CompleteRemoveImage(DialogMessage.DialogButton button)
+            {
+                if ((button & DialogMessage.DialogButton.Ok) == 0)
+                    return;
+
+                Media toRemove = SelectedImage;
+                SelectedImage = null;
+                Images.Remove(toRemove);
+                await _importService.TryRemoveMediaAsync(toRemove).ConfigureAwait(true);
+                await RaisePropertyChanged(nameof(ImageCount)).ConfigureAwait(true);
+            }
+
+            Messenger.Publish(new DialogMessage(
+                this,
+                "Confirm Deletion",
+                "Are you sure you want to delete this item?",
+                DialogMessage.DialogMessageType.Interaction)
+            {
+                Callback = CompleteRemoveImage
+            });
         }
 
         private async void UpdateImageList()

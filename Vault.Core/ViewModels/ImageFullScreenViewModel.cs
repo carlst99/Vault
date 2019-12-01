@@ -2,7 +2,6 @@
 using MvvmCross.Navigation;
 using MvvmCross.Plugin.Messenger;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Processing;
 using System.Collections.Generic;
 using System.IO;
@@ -91,15 +90,30 @@ namespace Vault.Core.ViewModels
             SelectedImage = _images[_selectedImageIndex];
         }
 
-        private async void OnRemoveImage()
+        private void OnRemoveImage()
         {
-            CanEditImage = false;
-            Media toRemove = SelectedImage;
-            OnCycleImage(false);
-            _images.Remove(toRemove);
-            Messenger.Publish(new MediaUpdatedMessage(this, toRemove, MediaUpdatedMessage.UpdateType.Removed));
-            await _importService.TryRemoveMediaAsync(toRemove).ConfigureAwait(true);
-            CanEditImage = true;
+            async void CompleteRemoveImage(DialogMessage.DialogButton button)
+            {
+                if ((button & DialogMessage.DialogButton.Ok) == 0)
+                    return;
+
+                CanEditImage = false;
+                Media toRemove = SelectedImage;
+                OnCycleImage(false);
+                _images.Remove(toRemove);
+                Messenger.Publish(new MediaUpdatedMessage(this, toRemove, MediaUpdatedMessage.UpdateType.Removed));
+                await _importService.TryRemoveMediaAsync(toRemove).ConfigureAwait(true);
+                CanEditImage = true;
+            }
+
+            Messenger.Publish(new DialogMessage(
+                this,
+                "Confirm Deletion",
+                "Are you sure you want to delete this item?",
+                DialogMessage.DialogMessageType.Interaction)
+            {
+                Callback = CompleteRemoveImage
+            });
         }
 
         private async void OnRotateImage(RotateMode rotateMode)
