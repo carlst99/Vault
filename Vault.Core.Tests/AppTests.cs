@@ -10,8 +10,6 @@ namespace Vault.Core.Tests
         public void TestCreateError()
         {
             const string message = "test";
-            ArgumentException exception = new ArgumentException();
-
             Exception generated = App.CreateError<Exception>(message, false);
             Assert.IsType<Exception>(generated);
             Assert.Equal(message, generated.Message);
