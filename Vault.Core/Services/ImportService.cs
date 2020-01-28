@@ -6,6 +6,7 @@ using SixLabors.ImageSharp.Processing;
 using StreamEncryptor.Predefined;
 using System;
 using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Threading.Tasks;
 using Vault.Core.Model.DbContext;
@@ -29,10 +30,12 @@ namespace Vault.Core.Services
 #endif
 
         private readonly IMvxMessenger _messenger;
+        private readonly IFileSystem _fileSystem;
 
-        public ImportService(IMvxMessenger messenger)
+        public ImportService(IMvxMessenger messenger, IFileSystem fileSystem)
         {
             _messenger = messenger;
+            _fileSystem = fileSystem;
         }
 
         public async Task<Media> TryImportImageAsync(string path)
@@ -67,9 +70,9 @@ namespace Vault.Core.Services
                     };
 
                     // Load, encrypt and save the file and thumbnail
-                    using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
-                    using (FileStream imageOutput = new FileStream(media.FilePath, FileMode.CreateNew, FileAccess.ReadWrite))
-                    using (FileStream thumbOutput = new FileStream(media.ThumbPath, FileMode.CreateNew, FileAccess.ReadWrite))
+                    using (Stream fs = _fileSystem.File.OpenRead(path))
+                    using (Stream imageOutput = _fileSystem.File.Open(media.FilePath, FileMode.CreateNew, FileAccess.ReadWrite))
+                    using (Stream thumbOutput = _fileSystem.File.Open(media.ThumbPath, FileMode.CreateNew, FileAccess.ReadWrite))
                     using (Image image = Image.Load(fs))
                     using (MemoryStream imageStore = new MemoryStream())
                     using (MemoryStream thumbStore = new MemoryStream())
@@ -145,7 +148,7 @@ namespace Vault.Core.Services
         public async Task<bool> TryRemoveMediaAsync(Media item)
         {
             // Check that the file to import exists
-            if (!File.Exists(item.FilePath) || !File.Exists(item.ThumbPath))
+            if (!_fileSystem.File.Exists(item.FilePath) || !_fileSystem.File.Exists(item.ThumbPath))
             {
                 Log.Information("Remove - Could not find the file to remove: {id}", item.Id);
                 ShowErrorDialog("An error occured while removing the file");
@@ -159,8 +162,8 @@ namespace Vault.Core.Services
                 int id = item.Id;
                 await Task.Run(() =>
                 {
-                    File.Delete(filePath);
-                    File.Delete(thumbPath);
+                    _fileSystem.File.Delete(filePath);
+                    _fileSystem.File.Delete(thumbPath);
                 }).ConfigureAwait(true);
 
                 Realm realm = RealmHelpers.GetRealmInstance();
@@ -182,7 +185,7 @@ namespace Vault.Core.Services
             AesHmacEncryptor encryptor = EncryptorAssistant.GetEncryptor();
 
             // Check that the file to import exists
-            if (!File.Exists(item.FilePath))
+            if (!_fileSystem.File.Exists(item.FilePath))
             {
                 Log.Information("Export - Could not locate the image to export");
                 ShowErrorDialog("There was an error exporting the file. Please try again. It may be that the file is corrupt and cannot be exported.");
@@ -191,8 +194,8 @@ namespace Vault.Core.Services
 
             try
             {
-                using (FileStream fs = new FileStream(item.FilePath, FileMode.Open, FileAccess.Read))
-                using (FileStream imageOutput = new FileStream(outputPath, FileMode.CreateNew, FileAccess.ReadWrite))
+                using (Stream fs = _fileSystem.File.OpenRead(item.FilePath))
+                using (Stream imageOutput = _fileSystem.File.Open(outputPath, FileMode.CreateNew, FileAccess.ReadWrite))
                 {
                     await encryptor.DecryptAsync(fs, imageOutput).ConfigureAwait(false);
                 }
@@ -223,17 +226,17 @@ namespace Vault.Core.Services
         /// </summary>
         /// <param name="directoryPath">The path to the directory</param>
         /// <returns></returns>
-        private bool CheckDirectoryExists(string directoryPath)
+        public bool CheckDirectoryExists(string directoryPath)
         {
             try
             {
-                if (!Directory.Exists(directoryPath))
-                    Directory.CreateDirectory(directoryPath);
+                if (!_fileSystem.Directory.Exists(directoryPath))
+                    _fileSystem.Directory.CreateDirectory(directoryPath);
                 return true;
             }
             catch (Exception ex)
             {
-                App.LogError("Could not import image", ex);
+                App.LogError("Could not import item as corresponding directory does not exist/cannot be created", ex);
                 return false;
             }
         }
@@ -246,7 +249,7 @@ namespace Vault.Core.Services
         /// <returns></returns>
         private string GetFilePath(string mediaDirectory, int id)
         {
-            return Path.Combine(mediaDirectory, id.ToString() + ".vault");
+            return _fileSystem.Path.Combine(mediaDirectory, id.ToString() + ".vault");
         }
 
         /// <summary>
@@ -257,7 +260,7 @@ namespace Vault.Core.Services
         /// <returns></returns>
         private string GetThumbPath(string mediaDirectory, int id)
         {
-            return Path.Combine(mediaDirectory, id.ToString() + ".vaultt");
+            return _fileSystem.Path.Combine(mediaDirectory, id.ToString() + ".vaultt");
         }
 
         #endregion

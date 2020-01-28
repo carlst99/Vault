@@ -7,6 +7,7 @@ using Serilog;
 using Serilog.Events;
 using System;
 using System.IO;
+using System.IO.Abstractions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Vault.Core.ViewModels;
@@ -29,6 +30,7 @@ namespace Vault.Core
                 .RegisterAsLazySingleton();
 
             Mvx.IoCProvider.RegisterSingleton<IMvxMessenger>(new MvxMessengerHub());
+            Mvx.IoCProvider.RegisterSingleton<IFileSystem>(new FileSystem());
 
 #if !DEBUG
             if (File.Exists(GetAppdataFilePath(HASH_FILE_LOCATION)))

@@ -9,5 +9,6 @@ namespace Vault.Core.Services
         Task<Media> TryImportVideoAsync(string path);
         Task<bool> TryRemoveMediaAsync(Media item);
         Task<bool> TryExportMediaAsync(Media item, string outputPath);
+        bool CheckDirectoryExists(string directoryPath);
     }
 }
