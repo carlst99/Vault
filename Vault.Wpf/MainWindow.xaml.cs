@@ -30,7 +30,9 @@ namespace Vault.Wpf
             InitializeComponent();
         }
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         private async void MvxWindow_Loaded(object sender, RoutedEventArgs e)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             _dialogSubToken = Mvx.IoCProvider.Resolve<IMvxMessenger>().SubscribeOnMainThread<DialogMessage>(OnDialogMessage);
             _openFileDialogSubToken = Mvx.IoCProvider.Resolve<IMvxMessenger>().SubscribeOnMainThread<OpenFileDialogMessage>(OnOpenFileDialogMessage);

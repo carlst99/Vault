@@ -105,9 +105,7 @@ namespace Vault.Core.ViewModels
             }
 
             foreach (string element in imagePaths)
-            {
-                Media media = await _importService.TryImportImageAsync(element).ConfigureAwait(true);
-            }
+                await _importService.TryImportImageAsync(element).ConfigureAwait(true);
 
             UpdateImageList();
             await RaisePropertyChanged(nameof(ImageCount)).ConfigureAwait(false);

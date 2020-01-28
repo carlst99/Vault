@@ -30,7 +30,7 @@ namespace Vault.Core.Tests.Services
         [Fact]
         public void TestCheckDirectoryExists()
         {
-            ImportService importService = GetImportService();
+            ImportService importService = GetImportService(out MockFileSystem fileSystem);
 
         }
 
@@ -46,7 +46,7 @@ namespace Vault.Core.Tests.Services
 
         private ImportService GetImportService(out MockFileSystem fileSystem)
         {
-            MockFileSystem fileSystem = new MockFileSystem(new Dictionary<string, MockFileData>
+            fileSystem = new MockFileSystem(new Dictionary<string, MockFileData>
             {
                 { @"c:\myfile.txt", new MockFileData("Testing is meh.") },
                 { @"c:\demo\jQuery.js", new MockFileData("some js") },

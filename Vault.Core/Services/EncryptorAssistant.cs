@@ -8,7 +8,9 @@ namespace Vault.Core.Services
     public static class EncryptorAssistant
     {
         private static readonly AesHmacEncryptor _encryptor = new AesHmacEncryptor("V7GAe5ZRJ4GtxZ3S8jJLCZNQP2SXTyO4");
+#pragma warning disable IDE0052 // Remove unread private members
         private static bool _initialised;
+#pragma warning restore IDE0052 // Remove unread private members
 
         public static AesHmacEncryptor GetEncryptor()
         {

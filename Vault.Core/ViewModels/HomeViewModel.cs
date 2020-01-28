@@ -2,7 +2,6 @@
 using MvvmCross.Navigation;
 using MvvmCross.Plugin.Messenger;
 #if !DEBUG
-using MvvmCross.Plugin.Messenger;
 using Vault.Core.Model.DbContext;
 using Vault.Core.Model.Messages;
 using Vault.Core.Services;
