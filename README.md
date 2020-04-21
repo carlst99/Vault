@@ -1,6 +1,6 @@
 # Vault
 Vault is a proof-of-concept application for my [StreamEncryptor](https://github.com/carlst99/StreamEncryptor) library. As such, I place no guarantees on the security of your encrypted data; I'm no expert! :smile:
-Furthermore, I haven't properly tested the application yet, so use with a pinch of salt (or a pinch of IV, geddit? :joy:).
+Furthermore, I haven't properly tested the application yet, so use with a pinch of salt.
 
 With that out of the way, Vault is designed to be application for hiding away all those files you'd rather other people don't see.
 Imports are encrypted with `AES-256` and authenticated using `HMACSHA256`.
